@@ -3,1199 +3,509 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KawaraOjek</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>KJGO – Everyday Ride</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-  :root {
-    --green: #00B14F;
-    --green-dark: #008F3F;
-    --green-light: #E6F9EE;
-    --green-mid: #00C957;
-    --orange: #FF6B00;
-    --orange-light: #FFF0E6;
-    --dark: #0D1117;
-    --dark2: #161B22;
-    --gray: #6E7681;
-    --gray-light: #F6F8FA;
-    --white: #FFFFFF;
-    --card-bg: #FFFFFF;
-    --border: #E1E4E8;
-    --shadow: 0 2px 16px rgba(0,0,0,0.08);
-    --shadow-md: 0 4px 24px rgba(0,0,0,0.12);
-    --r: 16px;
-    --r-sm: 10px;
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --green: #00b14f;
+  --green-dark: #008f3e;
+  --green-light: #e8f8ee;
+  --green-mid: #c6edd4;
+  --bg: #f4f5f7;
+  --white: #ffffff;
+  --text: #1a1a2e;
+  --text2: #5a5a7a;
+  --text3: #9898b0;
+  --border: #e4e4ee;
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+/* TOPBAR */
+.topbar {
+  background: var(--green); height: 58px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 2px 12px rgba(0,177,79,0.25);
+}
+.topbar-logo { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+.topbar-logo small { font-size: 11px; opacity: 0.75; font-weight: 500; margin-left: 6px; letter-spacing: 0; }
+.topbar-btn {
+  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 100px; color: #fff; font-family: inherit; font-size: 13px;
+  font-weight: 600; padding: 7px 16px; cursor: pointer; transition: 0.2s;
+  display: flex; align-items: center; gap: 6px;
+}
+.topbar-btn:hover { background: rgba(255,255,255,0.3); }
 
-  body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background: #F0F2F5;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 20px;
-  }
+/* LAYOUT */
+.app {
+  display: grid; grid-template-columns: 390px 1fr;
+  gap: 20px; max-width: 1140px; margin: 0 auto;
+  padding: 24px 20px 48px;
+  align-items: start;
+}
+@media(max-width: 800px) { .app { grid-template-columns: 1fr; } }
 
-  /* PHONE FRAME */
-  .phone {
-    width: 390px;
-    min-height: 844px;
-    background: var(--gray-light);
-    border-radius: 44px;
-    box-shadow: 0 32px 80px rgba(0,0,0,0.25), 0 0 0 2px #2C2C2C, inset 0 0 0 1px #444;
-    overflow: hidden;
-    position: relative;
-  }
+/* CARD */
+.card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
 
-  /* SCREENS */
-  .screen { display: none; height: 100%; flex-direction: column; }
-  .screen.active { display: flex; }
+/* SIDEBAR */
+.sidebar { display: flex; flex-direction: column; gap: 14px; }
 
-  /* SPLASH */
-  #splash {
-    background: linear-gradient(160deg, #00B14F 0%, #008F3F 60%, #005A28 100%);
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    gap: 16px;
-    min-height: 844px;
-  }
-  .logo-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-  }
-  .logo-icon {
-    width: 80px; height: 80px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.25);
-  }
-  .logo-icon svg { width: 48px; height: 48px; }
-  .logo-text { font-size: 32px; font-weight: 800; color: #fff; letter-spacing: -1px; }
-  .logo-sub { font-size: 14px; color: rgba(255,255,255,0.7); font-weight: 500; letter-spacing: 1px; text-transform: uppercase; }
-  .splash-loader {
-    margin-top: 60px;
-    width: 40px; height: 4px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .loader-bar {
-    height: 100%; width: 0%;
-    background: #fff;
-    border-radius: 2px;
-    animation: load 2s ease-in-out forwards;
-  }
-  @keyframes load { to { width: 100%; } }
+/* GREETING */
+.greeting {
+  background: linear-gradient(135deg, #00b14f 0%, #006d31 100%);
+  padding: 22px 20px; color: #fff; border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0,177,79,0.3);
+}
+.greeting-badge {
+  display: inline-block; background: rgba(255,255,255,0.2);
+  border-radius: 100px; padding: 3px 12px; font-size: 11px;
+  font-weight: 600; margin-bottom: 10px; letter-spacing: 0.5px;
+}
+.greeting h2 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.greeting p { font-size: 13px; opacity: 0.8; }
 
-  /* STATUS BAR */
-  .statusbar {
-    padding: 14px 24px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--dark);
-    flex-shrink: 0;
-  }
-  .statusbar.white { color: #fff; }
-  .status-icons { display: flex; gap: 6px; align-items: center; }
-  .status-icons span { font-size: 12px; }
+/* SECTION HEADER */
+.sec-hd { padding: 16px 20px 0; }
+.sec-label { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
 
-  /* HOME SCREEN */
-  #home { min-height: 844px; }
+/* SERVICE GRID */
+.svc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 16px 16px; }
+.svc-btn {
+  border: 2px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--white); padding: 12px 10px;
+  cursor: pointer; transition: all 0.18s; text-align: left;
+  display: flex; align-items: center; gap: 10px;
+}
+.svc-btn:hover { border-color: var(--green); background: var(--green-light); }
+.svc-btn.active { border-color: var(--green); background: var(--green-light); }
+.svc-ic {
+  width: 38px; height: 38px; border-radius: 10px; background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0; transition: background 0.18s;
+}
+.svc-btn.active .svc-ic { background: var(--green); }
+.svc-name { font-size: 13px; font-weight: 700; }
+.svc-desc { font-size: 11px; color: var(--text3); margin-top: 1px; }
 
-  .home-header {
-    background: linear-gradient(180deg, #00B14F 0%, #009944 100%);
-    padding: 0 20px 28px;
-    position: relative;
-    overflow: hidden;
-  }
-  .home-header::after {
-    content: '';
-    position: absolute;
-    bottom: -30px; left: -20px; right: -20px;
-    height: 60px;
-    background: var(--gray-light);
-    border-radius: 50%;
-  }
+/* LOCATION */
+.loc-box { padding: 4px 16px 16px; }
+.loc-item {
+  display: flex; align-items: center; gap: 12px;
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  padding: 12px 14px; cursor: pointer; transition: 0.18s; background: var(--bg);
+}
+.loc-item:hover { border-color: var(--green); }
+.loc-item.set { background: #fff; border-color: var(--green); }
+.loc-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.loc-connector { width: 1.5px; height: 14px; background: var(--border); margin: 4px 0 4px 5px; }
+.loc-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.loc-hint { font-size: 11px; color: var(--text3); margin-top: 2px; }
 
-  .header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 0 16px;
-  }
-  .header-logo { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
-  .header-actions { display: flex; gap: 10px; }
-  .icon-btn {
-    width: 36px; height: 36px;
-    background: rgba(255,255,255,0.18);
-    border-radius: 12px;
-    border: none;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    color: #fff;
-    font-size: 18px;
-    transition: background 0.2s;
-  }
-  .icon-btn:hover { background: rgba(255,255,255,0.28); }
+/* FORM */
+.form-box { padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.f-label { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; display: block; margin-bottom: 5px; }
+.f-input {
+  width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  padding: 11px 14px; font-family: inherit; font-size: 14px; color: var(--text);
+  background: var(--bg); outline: none; transition: 0.18s;
+}
+.f-input:focus { border-color: var(--green); background: #fff; }
+.f-input::placeholder { color: var(--text3); }
 
-  .greeting { color: rgba(255,255,255,0.85); font-size: 13px; margin-bottom: 2px; }
-  .user-name { color: #fff; font-size: 20px; font-weight: 700; }
+/* PAYMENT */
+.pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 4px 16px 16px; }
+.pay-btn {
+  border: 2px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--white); padding: 11px 14px;
+  cursor: pointer; transition: all 0.18s;
+  display: flex; align-items: center; gap: 8px;
+}
+.pay-btn:hover { border-color: var(--green); background: var(--green-light); }
+.pay-btn.active { border-color: var(--green); background: var(--green-light); }
+.pay-ic { font-size: 20px; }
+.pay-nm { font-size: 13px; font-weight: 700; }
 
-  .balance-card {
-    margin: 14px 0 0;
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 16px;
-    padding: 14px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .balance-left { display: flex; flex-direction: column; gap: 2px; }
-  .balance-label { font-size: 11px; color: rgba(255,255,255,0.7); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-  .balance-amount { font-size: 22px; font-weight: 800; color: #fff; }
-  .topup-btn {
-    background: #fff;
-    color: var(--green-dark);
-    border: none;
-    border-radius: 10px;
-    padding: 8px 16px;
-    font-size: 13px;
-    font-weight: 700;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    cursor: pointer;
-    transition: transform 0.1s;
-  }
-  .topup-btn:active { transform: scale(0.96); }
+/* PRICE */
+.price-bar {
+  background: var(--green-light); border-top: 1px solid var(--green-mid);
+  padding: 14px 20px;
+}
+.pr { display: flex; justify-content: space-between; font-size: 13px; color: var(--text2); margin-bottom: 6px; }
+.pr.total { font-size: 16px; font-weight: 800; color: var(--text); border-top: 1px solid var(--green-mid); padding-top: 10px; margin-top: 6px; margin-bottom: 0; }
+.pr.total span:last-child { color: var(--green); font-size: 18px; }
 
-  /* SEARCH BAR */
-  .search-wrap {
-    padding: 28px 20px 16px;
-    background: var(--gray-light);
-    position: relative;
-    z-index: 1;
-  }
-  .search-bar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #fff;
-    border-radius: 14px;
-    padding: 12px 16px;
-    box-shadow: var(--shadow);
-    cursor: pointer;
-    border: 1px solid var(--border);
-    transition: border-color 0.2s;
-  }
-  .search-bar:hover { border-color: var(--green); }
-  .search-icon { font-size: 18px; color: var(--green); }
-  .search-text { font-size: 14px; color: var(--gray); font-weight: 500; }
+/* ORDER BTN */
+.order-wrap { padding: 14px 16px; }
+.btn-order {
+  width: 100%; background: var(--green); border: none; border-radius: var(--radius-sm);
+  color: #fff; font-family: inherit; font-size: 15px; font-weight: 800;
+  padding: 15px; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-order:hover { background: var(--green-dark); box-shadow: 0 6px 20px rgba(0,177,79,0.35); transform: translateY(-1px); }
 
-  /* SERVICE GRID */
-  .section { padding: 0 20px 20px; background: var(--gray-light); }
-  .section-title { font-size: 16px; font-weight: 700; color: var(--dark); margin-bottom: 14px; }
+/* MAP PANEL */
+.map-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; position: sticky; top: 78px; }
+.map-top { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.map-title { font-size: 15px; font-weight: 700; }
+.map-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.map-tabs { display: flex; gap: 6px; }
+.m-tab {
+  padding: 7px 14px; border-radius: 100px; border: 1.5px solid var(--border);
+  background: var(--bg); font-family: inherit; font-size: 12px; font-weight: 700;
+  cursor: pointer; color: var(--text2); transition: all 0.18s;
+}
+.m-tab.active { background: var(--green); border-color: var(--green); color: #fff; }
+.map-tip {
+  margin: 12px 16px 0; padding: 9px 14px;
+  background: #fffbe6; border: 1px solid #f5c542; border-radius: 8px;
+  font-size: 12px; font-weight: 600; color: #7a5500;
+}
+#map { height: 430px; }
+.map-lgd { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; gap: 18px; flex-wrap: wrap; }
+.lgd-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); font-weight: 500; }
+.lgd-dot { width: 10px; height: 10px; border-radius: 50%; }
 
-  .services-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-  }
-  .service-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-  }
-  .service-icon {
-    width: 56px; height: 56px;
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    transition: transform 0.15s;
-  }
-  .service-item:active .service-icon { transform: scale(0.92); }
-  .service-icon.green { background: var(--green-light); }
-  .service-icon.orange { background: var(--orange-light); }
-  .service-icon.blue { background: #E6F0FF; }
-  .service-icon.pink { background: #FFE6F0; }
-  .service-icon.purple { background: #F0E6FF; }
-  .service-icon.yellow { background: #FFF8E6; }
-  .service-icon.teal { background: #E6FAF8; }
-  .service-icon.red { background: #FFE6E6; }
-  .service-label { font-size: 11px; font-weight: 600; color: var(--dark); text-align: center; }
-
-  /* PROMO BANNER */
-  .promo-wrap { padding: 0 20px 20px; background: var(--gray-light); }
-  .promo-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; }
-  .promo-scroll::-webkit-scrollbar { display: none; }
-  .promo-card {
-    min-width: 260px;
-    height: 120px;
-    border-radius: 16px;
-    padding: 16px;
-    position: relative;
-    overflow: hidden;
-    flex-shrink: 0;
-    cursor: pointer;
-  }
-  .promo-card.green-card { background: linear-gradient(135deg, #00B14F, #005A28); }
-  .promo-card.orange-card { background: linear-gradient(135deg, #FF6B00, #CC3300); }
-  .promo-card.blue-card { background: linear-gradient(135deg, #1A73E8, #0D47A1); }
-  .promo-title { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 4px; }
-  .promo-desc { font-size: 12px; color: rgba(255,255,255,0.8); font-weight: 500; }
-  .promo-badge {
-    position: absolute;
-    top: 12px; right: 12px;
-    background: rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 8px;
-    padding: 4px 10px;
-    font-size: 11px;
-    font-weight: 700;
-    color: #fff;
-  }
-
-  /* BOTTOM NAV */
-  .bottom-nav {
-    margin-top: auto;
-    background: #fff;
-    border-top: 1px solid var(--border);
-    padding: 10px 0 24px;
-    display: flex;
-    justify-content: space-around;
-    flex-shrink: 0;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
-  }
-  .nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    padding: 4px 16px;
-    border-radius: 12px;
-    transition: background 0.15s;
-    border: none; background: none;
-    font-family: inherit;
-  }
-  .nav-item:hover { background: var(--gray-light); }
-  .nav-icon { font-size: 22px; color: var(--gray); transition: color 0.15s; }
-  .nav-label { font-size: 10px; font-weight: 600; color: var(--gray); transition: color 0.15s; }
-  .nav-item.active .nav-icon,
-  .nav-item.active .nav-label { color: var(--green); }
-
-  /* BOOKING SCREEN */
-  #booking { min-height: 844px; }
-
-  .map-area {
-    position: relative;
-    height: 380px;
-    background: #E8F4E8;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-
-  /* Animated Map */
-  .map-svg { width: 100%; height: 100%; }
-  .map-road { stroke: #fff; stroke-width: 4; fill: none; opacity: 0.8; }
-  .map-road-sm { stroke: #d4e8d4; stroke-width: 2; fill: none; }
-  .map-block { fill: #c8dfc8; rx: 4; }
-  .driver-dot { fill: var(--green); }
-  .driver-ring { fill: none; stroke: var(--green); stroke-width: 2; opacity: 0; }
-  @keyframes ping {
-    0% { r: 12; opacity: 0.8; }
-    100% { r: 28; opacity: 0; }
-  }
-  .driver-ping { animation: ping 1.5s ease-out infinite; }
-
-  .user-dot { fill: #1A73E8; }
-  .user-ring { fill: none; stroke: #1A73E8; stroke-width: 2; }
-  @keyframes user-ping {
-    0% { r: 10; opacity: 0.7; }
-    100% { r: 22; opacity: 0; }
-  }
-  .user-ping { animation: user-ping 2s ease-out infinite 0.5s; }
-
-  .route-line { stroke: var(--green); stroke-width: 3; fill: none; stroke-dasharray: 8 4; animation: dash 1s linear infinite; }
-  @keyframes dash { to { stroke-dashoffset: -24; } }
-
-  .map-header {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    padding: 14px 16px;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.95), transparent);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    z-index: 10;
-  }
-  .back-btn {
-    width: 36px; height: 36px;
-    background: #fff;
-    border-radius: 50%;
-    border: none;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    box-shadow: var(--shadow);
-    font-size: 18px;
-    color: var(--dark);
-  }
-  .map-title { font-size: 16px; font-weight: 700; color: var(--dark); }
-
-  .driver-info-float {
-    position: absolute;
-    bottom: 12px; left: 16px; right: 16px;
-    background: #fff;
-    border-radius: 16px;
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: var(--shadow-md);
-    z-index: 10;
-  }
-  .driver-avatar {
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    background: var(--green-light);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-    border: 2px solid var(--green);
-  }
-  .driver-meta { flex: 1; }
-  .driver-name { font-size: 14px; font-weight: 700; color: var(--dark); }
-  .driver-plate { font-size: 12px; color: var(--gray); font-weight: 500; margin-top: 1px; }
-  .driver-rating { display: flex; align-items: center; gap: 4px; margin-top: 3px; }
-  .star { color: #FFC107; font-size: 12px; }
-  .rating-text { font-size: 12px; font-weight: 600; color: var(--dark); }
-  .eta-badge {
-    background: var(--green-light);
-    color: var(--green-dark);
-    border-radius: 10px;
-    padding: 8px 12px;
-    text-align: center;
-    flex-shrink: 0;
-  }
-  .eta-time { font-size: 18px; font-weight: 800; color: var(--green); }
-  .eta-label { font-size: 10px; color: var(--gray); font-weight: 500; }
-
-  .booking-bottom {
-    background: #fff;
-    border-radius: 24px 24px 0 0;
-    padding: 20px 20px 30px;
-    flex: 1;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-  }
-  .booking-title { font-size: 18px; font-weight: 800; color: var(--dark); margin-bottom: 16px; }
-
-  .route-box {
-    background: var(--gray-light);
-    border-radius: 14px;
-    padding: 14px;
-    margin-bottom: 16px;
-  }
-  .route-point {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .route-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .route-dot.from { background: var(--green); }
-  .route-dot.to { background: var(--orange); }
-  .route-line-divider {
-    width: 1px; height: 20px;
-    background: var(--border);
-    margin: 4px 0 4px 4.5px;
-  }
-  .route-addr { font-size: 13px; font-weight: 600; color: var(--dark); }
-  .route-city { font-size: 11px; color: var(--gray); margin-top: 1px; }
-
-  .vehicle-options { display: flex; gap: 10px; margin-bottom: 16px; }
-  .vehicle-opt {
-    flex: 1;
-    border: 1.5px solid var(--border);
-    border-radius: 14px;
-    padding: 12px 8px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    background: #fff;
-  }
-  .vehicle-opt.selected {
-    border-color: var(--green);
-    background: var(--green-light);
-  }
-  .vehicle-emoji { font-size: 26px; }
-  .vehicle-type { font-size: 11px; font-weight: 700; color: var(--dark); margin-top: 4px; }
-  .vehicle-price { font-size: 12px; color: var(--green); font-weight: 600; margin-top: 2px; }
-
-  .order-btn {
-    width: 100%;
-    background: var(--green);
-    color: #fff;
-    border: none;
-    border-radius: 14px;
-    padding: 16px;
-    font-size: 16px;
-    font-weight: 700;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 16px rgba(0,177,79,0.35);
-  }
-  .order-btn:hover { background: var(--green-dark); transform: translateY(-1px); }
-  .order-btn:active { transform: scale(0.98); }
-
-  /* REGISTER SCREEN */
-  #register { min-height: 844px; overflow-y: auto; }
-
-  .reg-header {
-    background: linear-gradient(160deg, #00B14F 0%, #006B30 100%);
-    padding: 20px 20px 40px;
-    position: relative;
-    overflow: hidden;
-  }
-  .reg-header::before {
-    content: '';
-    position: absolute;
-    width: 200px; height: 200px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 50%;
-    top: -80px; right: -60px;
-  }
-  .reg-back { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 12px; padding: 8px 14px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; margin-bottom: 20px; display: inline-block; }
-  .reg-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 12px;
-  }
-  .reg-headline { font-size: 26px; font-weight: 800; color: #fff; line-height: 1.2; margin-bottom: 8px; }
-  .reg-sub { font-size: 13px; color: rgba(255,255,255,0.75); font-weight: 500; }
-
-  /* Benefits */
-  .benefits {
-    display: flex;
-    gap: 10px;
-    padding: 20px;
-    background: #fff;
-    overflow-x: auto;
-    border-bottom: 1px solid var(--border);
-  }
-  .benefits::-webkit-scrollbar { display: none; }
-  .benefit-item {
-    min-width: 110px;
-    background: var(--gray-light);
-    border-radius: 14px;
-    padding: 14px 10px;
-    text-align: center;
-    flex-shrink: 0;
-  }
-  .benefit-icon { font-size: 26px; margin-bottom: 6px; }
-  .benefit-text { font-size: 11px; font-weight: 600; color: var(--dark); }
-  .benefit-sub { font-size: 10px; color: var(--gray); margin-top: 2px; }
-
-  /* Form */
-  .reg-form { padding: 20px; background: var(--gray-light); }
-  .form-section-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--gray);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 12px;
-    margin-top: 4px;
-  }
-  .form-group { margin-bottom: 14px; }
-  .form-label { font-size: 13px; font-weight: 600; color: var(--dark); margin-bottom: 6px; display: block; }
-  .form-label span { color: var(--orange); }
-  .form-input {
-    width: 100%;
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 13px 14px;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    color: var(--dark);
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .form-input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(0,177,79,0.1); }
-  .form-input::placeholder { color: #B0B7BF; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-  .vehicle-type-select {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 14px;
-  }
-  .vtype-card {
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 12px;
-    text-align: center;
-    cursor: pointer;
-    background: #fff;
-    transition: all 0.2s;
-  }
-  .vtype-card.selected { border-color: var(--green); background: var(--green-light); }
-  .vtype-card.selected .vtype-label { color: var(--green-dark); }
-  .vtype-emoji { font-size: 28px; }
-  .vtype-label { font-size: 12px; font-weight: 700; color: var(--dark); margin-top: 6px; }
-
-  /* Upload Doc */
-  .upload-doc {
-    background: #fff;
-    border: 1.5px dashed var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    margin-bottom: 14px;
-  }
-  .upload-doc:hover { border-color: var(--green); }
-  .upload-icon { font-size: 28px; margin-bottom: 6px; }
-  .upload-text { font-size: 13px; font-weight: 600; color: var(--dark); }
-  .upload-sub { font-size: 11px; color: var(--gray); margin-top: 3px; }
-
-  /* Checklist */
-  .checklist { list-style: none; margin-bottom: 20px; }
-  .checklist li {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    color: var(--dark);
-    font-weight: 500;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .checklist li:last-child { border-bottom: none; }
-  .check-icon { width: 20px; height: 20px; background: var(--green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--green); flex-shrink: 0; }
-
-  /* Submit */
-  .submit-btn {
-    width: 100%;
-    background: var(--green);
-    color: #fff;
-    border: none;
-    border-radius: 14px;
-    padding: 17px;
-    font-size: 16px;
-    font-weight: 800;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(0,177,79,0.4);
-    transition: all 0.2s;
-    margin-bottom: 10px;
-  }
-  .submit-btn:hover { background: var(--green-dark); transform: translateY(-1px); }
-  .submit-btn:active { transform: scale(0.98); }
-  .terms-text { font-size: 11px; color: var(--gray); text-align: center; line-height: 1.5; }
-  .terms-text a { color: var(--green); font-weight: 600; text-decoration: none; }
-
-  /* SUCCESS SCREEN */
-  #success { min-height: 844px; justify-content: center; align-items: center; background: var(--gray-light); padding: 30px; }
-  .success-card {
-    background: #fff;
-    border-radius: 24px;
-    padding: 32px 24px;
-    text-align: center;
-    box-shadow: var(--shadow-md);
-    width: 100%;
-  }
-  .success-icon { font-size: 64px; margin-bottom: 16px; }
-  .success-title { font-size: 24px; font-weight: 800; color: var(--dark); margin-bottom: 8px; }
-  .success-sub { font-size: 14px; color: var(--gray); font-weight: 500; line-height: 1.6; margin-bottom: 24px; }
-  .success-steps { text-align: left; margin-bottom: 24px; }
-  .step-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .step-item:last-child { border-bottom: none; }
-  .step-num {
-    width: 28px; height: 28px;
-    background: var(--green);
-    color: #fff;
-    border-radius: 50%;
-    font-size: 13px;
-    font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .step-text { font-size: 13px; font-weight: 500; color: var(--dark); padding-top: 4px; }
-  .home-btn {
-    width: 100%;
-    background: var(--green);
-    color: #fff;
-    border: none;
-    border-radius: 14px;
-    padding: 15px;
-    font-size: 15px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    box-shadow: 0 4px 16px rgba(0,177,79,0.3);
-    transition: all 0.2s;
-  }
-  .home-btn:hover { background: var(--green-dark); }
-
-  /* UTILS */
-  .scroll-body { overflow-y: auto; flex: 1; }
-  .scroll-body::-webkit-scrollbar { display: none; }
-
-  /* Animated Driver Position */
-  @keyframes moveDriver {
-    0% { transform: translate(160px, 220px); }
-    25% { transform: translate(200px, 180px); }
-    50% { transform: translate(220px, 150px); }
-    75% { transform: translate(195px, 120px); }
-    100% { transform: translate(160px, 90px); }
-  }
-  .driver-group { animation: moveDriver 6s ease-in-out infinite alternate; }
-
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(10,10,30,0.55); backdrop-filter: blur(5px); align-items: flex-end; justify-content: center; }
+.modal-overlay.show { display: flex; }
+@media(min-width: 500px) { .modal-overlay { align-items: center; } }
+.modal {
+  background: var(--white); width: 100%; max-width: 460px;
+  border-radius: 24px 24px 0 0; padding: 28px 24px 36px;
+}
+@media(min-width: 500px) { .modal { border-radius: 20px; } }
+.modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 22px; }
+.modal-icon { font-size: 44px; text-align: center; margin-bottom: 10px; }
+.modal h2 { font-size: 20px; font-weight: 800; text-align: center; margin-bottom: 6px; }
+.modal-desc { font-size: 13px; color: var(--text2); text-align: center; margin-bottom: 18px; }
+.sum-card { background: var(--bg); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 7px; }
+.sum-row { display: flex; justify-content: space-between; font-size: 13px; }
+.sum-row > span:first-child { color: var(--text2); }
+.sum-row > span:last-child { font-weight: 600; }
+.sum-row.hi > span:last-child { color: var(--green); font-size: 15px; font-weight: 800; }
+.sum-divider { border: none; border-top: 1px solid var(--border); margin: 4px 0; }
+.btn-wa {
+  width: 100%; background: #25d366; border: none; border-radius: var(--radius-sm);
+  color: #fff; font-family: inherit; font-size: 15px; font-weight: 800;
+  padding: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  text-decoration: none; transition: 0.2s;
+}
+.btn-wa:hover { background: #1cb851; }
+.btn-back { width: 100%; background: none; border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text2); font-family: inherit; font-size: 14px; font-weight: 600; padding: 12px; cursor: pointer; margin-top: 10px; transition: 0.2s; }
+.btn-back:hover { border-color: var(--text2); color: var(--text); }
 </style>
 </head>
 <body>
 
-<!-- PHONE FRAME -->
-<div class="phone">
+<div class="topbar">
+  <div class="topbar-logo">KJGO <small>Everyday Ride</small></div>
+  <button class="topbar-btn" onclick="window.open('https://wa.me/6287720254002','_blank')">
+    💬 Hubungi Admin
+  </button>
+</div>
 
-  <!-- SPLASH SCREEN -->
-  <div id="splash" class="screen active">
-    <div class="logo-wrap">
-      <div class="logo-icon">
-        <svg viewBox="0 0 48 48" fill="none">
-          <circle cx="24" cy="24" r="22" fill="rgba(255,255,255,0.15)"/>
-          <path d="M24 10 C16 10 10 16 10 24 C10 32 16 38 24 38" stroke="white" stroke-width="3" stroke-linecap="round"/>
-          <path d="M24 38 C32 38 38 32 38 24 C38 16 32 10 24 10" stroke="rgba(255,255,255,0.5)" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="24" cy="24" r="6" fill="white"/>
-          <path d="M24 18 L24 14 M30 24 L34 24 M24 30 L24 34" stroke="white" stroke-width="2" stroke-linecap="round"/>
-          <circle cx="14" cy="30" r="3" fill="rgba(255,255,255,0.7)"/>
-          <circle cx="34" cy="18" r="2" fill="rgba(255,255,255,0.5)"/>
-        </svg>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- GREETING -->
+    <div class="greeting">
+      <div class="greeting-badge">🟢 Siap Antar Sekarang</div>
+      <h2>Mau ke mana hari ini?</h2>
+      <p>Antar cepat, harga terjangkau, langsung via WhatsApp.</p>
+    </div>
+
+    <!-- LAYANAN -->
+    <div class="card">
+      <div class="sec-hd">
+        <div class="sec-label">Pilih Layanan</div>
       </div>
-      <div class="logo-text">KawaraOjek</div>
-      <div class="logo-sub">Antar Cepat, Sampai Pasti</div>
+      <div class="svc-grid">
+        <button class="svc-btn" id="svc-orang" onclick="selectService('orang')">
+          <div class="svc-ic">🛵</div>
+          <div><div class="svc-name">Antar Jemput</div><div class="svc-desc">Ojek personal</div></div>
+        </button>
+        <button class="svc-btn" id="svc-barang" onclick="selectService('barang')">
+          <div class="svc-ic">📦</div>
+          <div><div class="svc-name">Kirim Barang</div><div class="svc-desc">Paket & dokumen</div></div>
+        </button>
+        <button class="svc-btn" id="svc-makanan" onclick="selectService('makanan')">
+          <div class="svc-ic">🍱</div>
+          <div><div class="svc-name">Beli Makanan</div><div class="svc-desc">Titip beli makan</div></div>
+        </button>
+        <button class="svc-btn" id="svc-perabotan" onclick="selectService('perabotan')">
+          <div class="svc-ic">🛒</div>
+          <div><div class="svc-name">Belanja</div><div class="svc-desc">Perabotan & lainnya</div></div>
+        </button>
+      </div>
     </div>
-    <div class="splash-loader">
-      <div class="loader-bar"></div>
-    </div>
-  </div>
 
-  <!-- HOME SCREEN -->
-  <div id="home" class="screen">
-    <!-- Map-like green header -->
-    <div class="home-header">
-      <div class="statusbar white">
-        <span>09:41</span>
-        <div class="status-icons">
-          <span>📶</span><span>🔋</span>
+    <!-- LOKASI -->
+    <div class="card">
+      <div class="sec-hd">
+        <div class="sec-label">Titik Lokasi</div>
+      </div>
+      <div class="loc-box">
+        <div class="loc-item" id="li-pickup" onclick="activateTab('pickup')">
+          <div class="loc-dot" style="background:#ff6b35;"></div>
+          <div>
+            <div class="loc-name" id="pickup-label">Lokasi beli / jemput</div>
+            <div class="loc-hint">Tandai di peta →</div>
+          </div>
+        </div>
+        <div class="loc-connector"></div>
+        <div class="loc-item" id="li-drop" onclick="activateTab('drop')">
+          <div class="loc-dot" style="background:var(--green);"></div>
+          <div>
+            <div class="loc-name" id="drop-label">Lokasi kamu (tujuan)</div>
+            <div class="loc-hint">Tandai di peta →</div>
+          </div>
         </div>
       </div>
-      <div class="header-top">
+    </div>
+
+    <!-- DATA DIRI -->
+    <div class="card">
+      <div class="sec-hd">
+        <div class="sec-label">Data Diri</div>
+      </div>
+      <div class="form-box">
         <div>
-          <div class="greeting">Selamat pagi 👋</div>
-          <div class="user-name">Ahmad Fauzi</div>
+          <label class="f-label">Nama Lengkap</label>
+          <input class="f-input" id="nama" type="text" placeholder="Contoh: Budi Santoso" />
         </div>
-        <div class="header-actions">
-          <button class="icon-btn">🔔</button>
-          <button class="icon-btn" onclick="showScreen('register')">🏍️</button>
+        <div>
+          <label class="f-label">Nomor HP</label>
+          <input class="f-input" id="nohp" type="text" placeholder="08xxxxxxxxxx" />
         </div>
-      </div>
-      <div class="balance-card">
-        <div class="balance-left">
-          <div class="balance-label">Kawara Pay</div>
-          <div class="balance-amount">Rp 157.500</div>
-        </div>
-        <button class="topup-btn">+ Top Up</button>
-      </div>
-    </div>
-
-    <div class="scroll-body">
-      <!-- Search -->
-      <div class="search-wrap">
-        <div class="search-bar" onclick="showScreen('booking')">
-          <span class="search-icon">📍</span>
-          <span class="search-text">Mau ke mana sekarang?</span>
-        </div>
-      </div>
-
-      <!-- Services -->
-      <div class="section">
-        <div class="section-title">Layanan Kami</div>
-        <div class="services-grid">
-          <div class="service-item" onclick="showScreen('booking')">
-            <div class="service-icon green">🏍️</div>
-            <div class="service-label">KawaraRide</div>
-          </div>
-          <div class="service-item">
-            <div class="service-icon orange">🚗</div>
-            <div class="service-label">KawaraCar</div>
-          </div>
-          <div class="service-item">
-            <div class="service-icon blue">🍔</div>
-            <div class="service-label">KawaraFood</div>
-          </div>
-          <div class="service-item">
-            <div class="service-icon pink">📦</div>
-            <div class="service-label">KawaraSend</div>
-          </div>
-          <div class="service-item">
-            <div class="service-icon purple">🏥</div>
-            <div class="service-label">KawaraMed</div>
-          </div>
-          <div class="service-item">
-            <div class="service-icon yellow">💊</div>
-            <div class="service-label">KawaraAptk</div>
-          </div>
-          <div class="service-item">
-            <div class="service-icon teal">🛒</div>
-            <div class="service-label">KawaraMart</div>
-          </div>
-          <div class="service-item">
-            <div class="service-icon red">⚡</div>
-            <div class="service-label">KawaraBayar</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Promos -->
-      <div class="promo-wrap">
-        <div class="section-title">Promo Hari Ini</div>
-        <div class="promo-scroll">
-          <div class="promo-card green-card">
-            <div class="promo-badge">PROMO</div>
-            <div class="promo-title">Diskon 50%</div>
-            <div class="promo-desc">KawaraRide untuk 5 perjalanan pertama kamu</div>
-          </div>
-          <div class="promo-card orange-card">
-            <div class="promo-badge">NEW</div>
-            <div class="promo-title">Gratis Ongkir</div>
-            <div class="promo-desc">Pesan makanan min. Rp 30.000 di KawaraFood</div>
-          </div>
-          <div class="promo-card blue-card">
-            <div class="promo-badge">SPESIAL</div>
-            <div class="promo-title">Cashback 25%</div>
-            <div class="promo-desc">Bayar pakai Kawara Pay dapat cashback!</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Join Driver Banner -->
-      <div style="padding: 0 20px 24px; background: var(--gray-light);">
-        <div style="background: linear-gradient(135deg, #0D1117, #1C2128); border-radius: 20px; padding: 20px; position: relative; overflow: hidden; cursor: pointer;" onclick="showScreen('register')">
-          <div style="position: absolute; top: -30px; right: -20px; font-size: 80px; opacity: 0.15;">🏍️</div>
-          <div style="font-size: 13px; color: rgba(255,255,255,0.6); font-weight: 500; margin-bottom: 4px;">Tambah Penghasilan Kamu</div>
-          <div style="font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 12px;">Daftar Jadi Mitra<br>KawaraOjek Sekarang!</div>
-          <div style="background: var(--green); color: #fff; border-radius: 10px; padding: 10px 18px; font-size: 13px; font-weight: 700; display: inline-block;">Daftar Mitra →</div>
+        <div>
+          <label class="f-label">Keterangan Pesanan</label>
+          <textarea class="f-input" id="keterangan" rows="2" placeholder="Contoh: Nasi goreng 2 porsi di warung Bu Siti..."></textarea>
         </div>
       </div>
     </div>
 
-    <div class="bottom-nav">
-      <button class="nav-item active">
-        <span class="nav-icon">🏠</span>
-        <span class="nav-label">Beranda</span>
-      </button>
-      <button class="nav-item">
-        <span class="nav-icon">📋</span>
-        <span class="nav-label">Pesanan</span>
-      </button>
-      <button class="nav-item">
-        <span class="nav-icon">💳</span>
-        <span class="nav-label">Bayar</span>
-      </button>
-      <button class="nav-item">
-        <span class="nav-icon">💬</span>
-        <span class="nav-label">Pesan</span>
-      </button>
-      <button class="nav-item">
-        <span class="nav-icon">👤</span>
-        <span class="nav-label">Profil</span>
-      </button>
+    <!-- PEMBAYARAN -->
+    <div class="card">
+      <div class="sec-hd">
+        <div class="sec-label">Metode Pembayaran</div>
+      </div>
+      <div class="pay-grid">
+        <button class="pay-btn" id="pay-QRIS" onclick="selectPayment('QRIS')">
+          <span class="pay-ic">📱</span><span class="pay-nm">QRIS</span>
+        </button>
+        <button class="pay-btn" id="pay-GoPay" onclick="selectPayment('GoPay')">
+          <span class="pay-ic">💚</span><span class="pay-nm">GoPay</span>
+        </button>
+        <button class="pay-btn" id="pay-DANA" onclick="selectPayment('DANA')">
+          <span class="pay-ic">💙</span><span class="pay-nm">DANA</span>
+        </button>
+        <button class="pay-btn" id="pay-Cash" onclick="selectPayment('Cash')">
+          <span class="pay-ic">💵</span><span class="pay-nm">Cash</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- HARGA + ORDER -->
+    <div class="card">
+      <div class="price-bar">
+        <div class="pr"><span>Estimasi jarak</span><span id="dist-text">– km</span></div>
+        <div class="pr"><span>Tarif per km</span><span>Rp 1.500</span></div>
+        <div class="pr total"><span>Total Ongkos</span><span id="price-text">Rp –</span></div>
+      </div>
+      <div class="order-wrap">
+        <button class="btn-order" onclick="submitOrder()">
+          Pesan Sekarang &nbsp;→
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /sidebar -->
+
+  <!-- MAP -->
+  <div class="map-card">
+    <div class="map-top">
+      <div>
+        <div class="map-title">🗺️ Peta Rute</div>
+        <div class="map-sub">Rumah KJGO → Lokasi Beli → Lokasi Kamu</div>
+      </div>
+      <div class="map-tabs">
+        <button class="m-tab active" id="tab-pickup" onclick="activateTab('pickup')">📍 Tandai Beli</button>
+        <button class="m-tab" id="tab-drop" onclick="activateTab('drop')">🏠 Tandai Tujuan</button>
+      </div>
+    </div>
+    <div class="map-tip" id="map-tip">
+      ✏️ Klik di peta untuk menandai <strong>lokasi beli / jemput</strong>
+    </div>
+    <div id="map"></div>
+    <div class="map-lgd">
+      <div class="lgd-item"><div class="lgd-dot" style="background:#f5c542;outline:2px solid #ccc;"></div>Rumah KJGO</div>
+      <div class="lgd-item"><div class="lgd-dot" style="background:#ff6b35;"></div>Lokasi Beli/Jemput</div>
+      <div class="lgd-item"><div class="lgd-dot" style="background:#00b14f;"></div>Lokasi Kamu</div>
     </div>
   </div>
 
-  <!-- BOOKING / GPS SCREEN -->
-  <div id="booking" class="screen">
-    <!-- MAP with animated GPS -->
-    <div class="map-area">
-      <svg class="map-svg" viewBox="0 0 390 380" xmlns="http://www.w3.org/2000/svg">
-        <!-- Background -->
-        <rect width="390" height="380" fill="#E8F4E8"/>
-        <!-- Blocks / buildings -->
-        <rect x="20" y="20" width="70" height="50" rx="4" fill="#C5DCC5"/>
-        <rect x="100" y="20" width="60" height="40" rx="4" fill="#C5DCC5"/>
-        <rect x="20" y="90" width="50" height="60" rx="4" fill="#C5DCC5"/>
-        <rect x="180" y="20" width="80" height="55" rx="4" fill="#C5DCC5"/>
-        <rect x="280" y="20" width="90" height="50" rx="4" fill="#C5DCC5"/>
-        <rect x="290" y="90" width="80" height="70" rx="4" fill="#C5DCC5"/>
-        <rect x="20" y="180" width="60" height="80" rx="4" fill="#C5DCC5"/>
-        <rect x="100" y="180" width="50" height="60" rx="4" fill="#C5DCC5"/>
-        <rect x="280" y="180" width="90" height="60" rx="4" fill="#C5DCC5"/>
-        <rect x="30" y="290" width="70" height="70" rx="4" fill="#C5DCC5"/>
-        <rect x="120" y="290" width="60" height="60" rx="4" fill="#C5DCC5"/>
-        <rect x="200" y="280" width="80" height="70" rx="4" fill="#C5DCC5"/>
-        <rect x="300" y="270" width="70" height="80" rx="4" fill="#C5DCC5"/>
+</div><!-- /app -->
 
-        <!-- Main Roads -->
-        <line x1="0" y1="160" x2="390" y2="160" stroke="white" stroke-width="6"/>
-        <line x1="0" y1="260" x2="390" y2="260" stroke="white" stroke-width="6"/>
-        <line x1="170" y1="0" x2="170" y2="380" stroke="white" stroke-width="6"/>
-        <line x1="270" y1="0" x2="270" y2="380" stroke="white" stroke-width="6"/>
-        <line x1="80" y1="0" x2="80" y2="380" stroke="white" stroke-width="4"/>
-
-        <!-- Road markings -->
-        <line x1="0" y1="160" x2="390" y2="160" stroke="#D0E8D0" stroke-width="1" stroke-dasharray="12 8"/>
-        <line x1="170" y1="0" x2="170" y2="380" stroke="#D0E8D0" stroke-width="1" stroke-dasharray="12 8"/>
-
-        <!-- Route path -->
-        <path d="M 195 310 Q 195 260 195 230 Q 195 200 195 170 Q 195 130 195 100" class="route-line"/>
-
-        <!-- User location -->
-        <circle cx="195" cy="310" r="18" fill="rgba(26,115,232,0.12)"/>
-        <circle cx="195" cy="310" r="10" fill="#1A73E8" opacity="0.9"/>
-        <circle cx="195" cy="310" r="5" fill="white"/>
-        <circle cx="195" cy="310" r="18" fill="none" stroke="#1A73E8" stroke-width="1.5" opacity="0.5">
-          <animate attributeName="r" values="10;22" dur="2s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" values="0.6;0" dur="2s" repeatCount="indefinite"/>
-        </circle>
-
-        <!-- Destination pin -->
-        <circle cx="195" cy="90" r="16" fill="rgba(255,107,0,0.15)"/>
-        <circle cx="195" cy="90" r="9" fill="#FF6B00"/>
-        <circle cx="195" cy="90" r="4" fill="white"/>
-
-        <!-- Animated Driver -->
-        <g class="driver-group">
-          <circle r="18" fill="rgba(0,177,79,0.15)">
-            <animate attributeName="r" values="12;26" dur="1.5s" repeatCount="indefinite"/>
-            <animate attributeName="opacity" values="0.7;0" dur="1.5s" repeatCount="indefinite"/>
-          </circle>
-          <circle r="13" fill="#00B14F" opacity="0.9"/>
-          <text text-anchor="middle" dy="5" font-size="14">🏍️</text>
-        </g>
-
-        <!-- Location labels -->
-        <rect x="100" y="300" width="80" height="22" rx="11" fill="rgba(26,115,232,0.9)"/>
-        <text x="140" y="315" text-anchor="middle" font-size="10" fill="white" font-weight="600">Lokasi Kamu</text>
-
-        <rect x="105" y="70" width="80" height="22" rx="11" fill="rgba(255,107,0,0.9)"/>
-        <text x="145" y="85" text-anchor="middle" font-size="10" fill="white" font-weight="600">Tujuan</text>
-      </svg>
-
-      <!-- Map Header -->
-      <div class="map-header">
-        <button class="back-btn" onclick="showScreen('home')">←</button>
-        <span class="map-title">Lacak Driver</span>
-      </div>
-
-      <!-- Driver Info Float -->
-      <div class="driver-info-float">
-        <div class="driver-avatar">🏍️</div>
-        <div class="driver-meta">
-          <div class="driver-name">Budi Santoso</div>
-          <div class="driver-plate">DA 2847 KA</div>
-          <div class="driver-rating">
-            <span class="star">★★★★★</span>
-            <span class="rating-text">4.9</span>
-          </div>
-        </div>
-        <div class="eta-badge">
-          <div class="eta-time">5 min</div>
-          <div class="eta-label">ETA</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Booking Panel -->
-    <div class="booking-bottom">
-      <div class="booking-title">Pilih Layanan</div>
-
-      <div class="route-box">
-        <div class="route-point">
-          <div class="route-dot from"></div>
-          <div>
-            <div class="route-addr">Jl. Ahmad Yani No. 15</div>
-            <div class="route-city">Banjarmasin Tengah</div>
-          </div>
-        </div>
-        <div class="route-line-divider" style="margin-left: 4.5px;"></div>
-        <div class="route-point">
-          <div class="route-dot to"></div>
-          <div>
-            <div class="route-addr">Mall Duta Banjarmasin</div>
-            <div class="route-city">Banjarmasin Selatan</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="vehicle-options">
-        <div class="vehicle-opt selected" onclick="selectVehicle(this)">
-          <div class="vehicle-emoji">🏍️</div>
-          <div class="vehicle-type">Motor</div>
-          <div class="vehicle-price">Rp 12.000</div>
-        </div>
-        <div class="vehicle-opt" onclick="selectVehicle(this)">
-          <div class="vehicle-emoji">🚗</div>
-          <div class="vehicle-type">Mobil</div>
-          <div class="vehicle-price">Rp 28.000</div>
-        </div>
-        <div class="vehicle-opt" onclick="selectVehicle(this)">
-          <div class="vehicle-emoji">🛵</div>
-          <div class="vehicle-type">Hemat</div>
-          <div class="vehicle-price">Rp 9.000</div>
-        </div>
-      </div>
-
-      <button class="order-btn" onclick="showScreen('home')">🏍️ &nbsp; Pesan Sekarang - Rp 12.000</button>
-    </div>
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-icon">🛵</div>
+    <h2>Konfirmasi Pesanan</h2>
+    <p class="modal-desc">Cek detail pesananmu lalu kirim ke WhatsApp admin.</p>
+    <div class="sum-card" id="modal-summary"></div>
+    <a id="wa-link" href="#" target="_blank" class="btn-wa">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+      Kirim ke WhatsApp Admin
+    </a>
+    <button class="btn-back" onclick="closeModal()">← Edit Pesanan</button>
   </div>
-
-  <!-- REGISTER DRIVER SCREEN -->
-  <div id="register" class="screen">
-    <div class="scroll-body">
-      <!-- Header -->
-      <div class="statusbar" style="background: #00B14F; padding: 14px 24px 0;">
-        <span style="color:white">09:41</span>
-        <div class="status-icons">
-          <span>📶</span><span>🔋</span>
-        </div>
-      </div>
-      <div class="reg-header">
-        <button class="reg-back" onclick="showScreen('home')">← Kembali</button>
-        <div class="reg-badge">
-          <span>🏍️</span> Mitra Driver
-        </div>
-        <div class="reg-headline">Daftar Jadi Mitra<br>KawaraOjek</div>
-        <div class="reg-sub">Bergabung dengan 50.000+ mitra aktif di Kalimantan Selatan</div>
-      </div>
-
-      <!-- Benefits -->
-      <div class="benefits">
-        <div class="benefit-item">
-          <div class="benefit-icon">💰</div>
-          <div class="benefit-text">Penghasilan</div>
-          <div class="benefit-sub">Hingga 5 jt/bulan</div>
-        </div>
-        <div class="benefit-item">
-          <div class="benefit-icon">⏰</div>
-          <div class="benefit-text">Waktu Bebas</div>
-          <div class="benefit-sub">Kerja kapan saja</div>
-        </div>
-        <div class="benefit-item">
-          <div class="benefit-icon">🛡️</div>
-          <div class="benefit-text">Asuransi</div>
-          <div class="benefit-sub">Jiwa & kecelakaan</div>
-        </div>
-        <div class="benefit-item">
-          <div class="benefit-icon">📈</div>
-          <div class="benefit-text">Bonus Harian</div>
-          <div class="benefit-sub">Ratusan ribu</div>
-        </div>
-      </div>
-
-      <!-- Form -->
-      <div class="reg-form">
-        <div class="form-section-title">Data Pribadi</div>
-
-        <div class="form-group">
-          <label class="form-label">Nama Lengkap <span>*</span></label>
-          <input class="form-input" type="text" placeholder="Sesuai KTP">
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">No. HP <span>*</span></label>
-            <input class="form-input" type="tel" placeholder="08xx-xxxx-xxxx">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Tanggal Lahir <span>*</span></label>
-            <input class="form-input" type="date">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Alamat Lengkap <span>*</span></label>
-          <input class="form-input" type="text" placeholder="Jalan, RT/RW, Kelurahan">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Kota / Kabupaten <span>*</span></label>
-          <input class="form-input" type="text" placeholder="Contoh: Banjarmasin">
-        </div>
-
-        <div class="form-section-title" style="margin-top: 20px;">Data Kendaraan</div>
-
-        <label class="form-label" style="margin-bottom: 10px;">Pilih Jenis Kendaraan <span style="color:var(--orange)">*</span></label>
-        <div class="vehicle-type-select">
-          <div class="vtype-card selected" onclick="selectVType(this)">
-            <div class="vtype-emoji">🏍️</div>
-            <div class="vtype-label">Motor</div>
-          </div>
-          <div class="vtype-card" onclick="selectVType(this)">
-            <div class="vtype-emoji">🚗</div>
-            <div class="vtype-label">Mobil</div>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Merk Kendaraan <span>*</span></label>
-            <input class="form-input" type="text" placeholder="Honda, Yamaha...">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Tahun <span>*</span></label>
-            <input class="form-input" type="number" placeholder="2020">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Nomor Plat <span>*</span></label>
-          <input class="form-input" type="text" placeholder="DA XXXX XX" style="text-transform: uppercase;">
-        </div>
-
-        <div class="form-section-title" style="margin-top: 20px;">Dokumen</div>
-
-        <div class="upload-doc">
-          <div class="upload-icon">📷</div>
-          <div class="upload-text">Upload Foto KTP</div>
-          <div class="upload-sub">JPG/PNG, maks 5MB</div>
-        </div>
-
-        <div class="upload-doc">
-          <div class="upload-icon">📄</div>
-          <div class="upload-text">Upload SIM A/C</div>
-          <div class="upload-sub">JPG/PNG, maks 5MB</div>
-        </div>
-
-        <div class="upload-doc">
-          <div class="upload-icon">🪪</div>
-          <div class="upload-text">Upload STNK Kendaraan</div>
-          <div class="upload-sub">JPG/PNG, maks 5MB</div>
-        </div>
-
-        <div class="upload-doc">
-          <div class="upload-icon">🤳</div>
-          <div class="upload-text">Upload Foto Selfie + KTP</div>
-          <div class="upload-sub">Foto terbaru, cahaya cukup</div>
-        </div>
-
-        <div class="form-section-title" style="margin-top: 20px;">Syarat Bergabung</div>
-        <ul class="checklist">
-          <li><div class="check-icon">✓</div>Usia minimal 18 tahun</li>
-          <li><div class="check-icon">✓</div>Memiliki SIM A atau C yang masih berlaku</li>
-          <li><div class="check-icon">✓</div>Kendaraan tahun 2015 ke atas</li>
-          <li><div class="check-icon">✓</div>Smartphone Android/iOS</li>
-          <li><div class="check-icon">✓</div>Berdomisili di area layanan KawaraOjek</li>
-        </ul>
-
-        <button class="submit-btn" onclick="showScreen('success')">🏍️ &nbsp; Daftar Jadi Mitra Sekarang</button>
-        <div class="terms-text">Dengan mendaftar, kamu menyetujui <a href="#">Syarat & Ketentuan</a> dan <a href="#">Kebijakan Privasi</a> KawaraOjek</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SUCCESS SCREEN -->
-  <div id="success" class="screen">
-    <div style="padding: 20px 0 0;">
-      <div class="statusbar">
-        <span>09:41</span>
-        <div class="status-icons"><span>📶</span><span>🔋</span></div>
-      </div>
-    </div>
-    <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px;">
-      <div class="success-card">
-        <div class="success-icon">🎉</div>
-        <div class="success-title">Pendaftaran Berhasil!</div>
-        <div class="success-sub">Selamat! Data kamu sudah kami terima. Tim KawaraOjek akan melakukan verifikasi dalam 1×24 jam.</div>
-        <div class="success-steps">
-          <div class="step-item">
-            <div class="step-num">1</div>
-            <div class="step-text">Verifikasi dokumen oleh tim KawaraOjek (1×24 jam)</div>
-          </div>
-          <div class="step-item">
-            <div class="step-num">2</div>
-            <div class="step-text">Kamu akan menerima notifikasi via SMS & email</div>
-          </div>
-          <div class="step-item">
-            <div class="step-num">3</div>
-            <div class="step-text">Download aplikasi KawaraOjek Driver & login</div>
-          </div>
-          <div class="step-item">
-            <div class="step-num">4</div>
-            <div class="step-text">Mulai terima pesanan dan raih penghasilan!</div>
-          </div>
-        </div>
-        <button class="home-btn" onclick="showScreen('home')">Kembali ke Beranda</button>
-      </div>
-    </div>
-  </div>
-
-</div><!-- end phone -->
+</div>
 
 <script>
-  // Auto-transition splash to home
-  setTimeout(() => showScreen('home'), 2400);
+const HOME = [-3.3194, 114.5908];
+const RATE = 1500;
+let pickupLL = null, dropLL = null, mapMode = 'pickup';
+let selectedService = '', selectedPayment = '';
 
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    // scroll to top for scrollable screens
-    const el = document.getElementById(id);
-    const sb = el.querySelector('.scroll-body');
-    if (sb) sb.scrollTop = 0;
-  }
+const map = L.map('map', { zoomControl: true, attributionControl: false });
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+map.setView(HOME, 14);
 
-  function selectVehicle(el) {
-    document.querySelectorAll('.vehicle-opt').forEach(v => v.classList.remove('selected'));
-    el.classList.add('selected');
-    const price = el.querySelector('.vehicle-price').textContent;
-    const type = el.querySelector('.vehicle-type').textContent;
-    document.querySelector('.order-btn').textContent = `🏍️   Pesan Sekarang - ${price}`;
-  }
+const icHome   = L.divIcon({ html: '<div style="width:18px;height:18px;border-radius:50%;background:#f5c542;border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,0.35)"></div>', className:'', iconAnchor:[9,9] });
+const icPickup = L.divIcon({ html: '<div style="width:16px;height:16px;border-radius:50%;background:#ff6b35;border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,0.35)"></div>', className:'', iconAnchor:[8,8] });
+const icDrop   = L.divIcon({ html: '<div style="width:16px;height:16px;border-radius:50%;background:#00b14f;border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,0.35)"></div>', className:'', iconAnchor:[8,8] });
 
-  function selectVType(el) {
-    document.querySelectorAll('.vtype-card').forEach(v => v.classList.remove('selected'));
-    el.classList.add('selected');
+L.marker(HOME, {icon:icHome}).addTo(map).bindPopup('🏠 Rumah KJGO');
+let mPickup=null, mDrop=null, routeLine=null;
+
+map.on('click', e => {
+  if (mapMode === 'pickup') {
+    if (mPickup) map.removeLayer(mPickup);
+    pickupLL = e.latlng;
+    mPickup = L.marker(e.latlng, {icon:icPickup}).addTo(map).bindPopup('📍 Lokasi Beli/Jemput');
+    document.getElementById('pickup-label').textContent = e.latlng.lat.toFixed(5)+', '+e.latlng.lng.toFixed(5);
+    document.getElementById('li-pickup').classList.add('set');
+    activateTab('drop');
+  } else {
+    if (mDrop) map.removeLayer(mDrop);
+    dropLL = e.latlng;
+    mDrop = L.marker(e.latlng, {icon:icDrop}).addTo(map).bindPopup('🏠 Lokasi Kamu');
+    document.getElementById('drop-label').textContent = e.latlng.lat.toFixed(5)+', '+e.latlng.lng.toFixed(5);
+    document.getElementById('li-drop').classList.add('set');
   }
+  drawRoute(); calcPrice();
+});
+
+function activateTab(mode) {
+  mapMode = mode;
+  document.getElementById('tab-pickup').classList.toggle('active', mode==='pickup');
+  document.getElementById('tab-drop').classList.toggle('active', mode==='drop');
+  document.getElementById('map-tip').innerHTML = mode==='pickup'
+    ? '✏️ Klik di peta untuk menandai <strong>lokasi beli / jemput</strong>'
+    : '✏️ Klik di peta untuk menandai <strong>lokasi tujuan (rumah kamu)</strong>';
+}
+
+function drawRoute() {
+  if (routeLine) { map.removeLayer(routeLine); routeLine=null; }
+  const pts = [HOME];
+  if (pickupLL) pts.push([pickupLL.lat, pickupLL.lng]);
+  if (dropLL) pts.push([dropLL.lat, dropLL.lng]);
+  if (pts.length > 1) {
+    routeLine = L.polyline(pts, {color:'#00b14f', weight:3.5, dashArray:'9,5', opacity:0.85}).addTo(map);
+    map.fitBounds(routeLine.getBounds(), {padding:[50,50]});
+  }
+}
+
+function haversine(a, b) {
+  const R=6371, dLat=(b.lat-a.lat)*Math.PI/180, dLng=(b.lng-a.lng)*Math.PI/180;
+  const x=Math.sin(dLat/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+}
+
+function calcPrice() {
+  if (!pickupLL||!dropLL) return;
+  const h={lat:HOME[0],lng:HOME[1]};
+  const km = haversine(h,pickupLL)+haversine(pickupLL,dropLL);
+  const total = Math.ceil(km)*RATE;
+  document.getElementById('dist-text').textContent = km.toFixed(2)+' km';
+  document.getElementById('price-text').textContent = 'Rp '+total.toLocaleString('id-ID');
+}
+
+function selectService(s) {
+  selectedService = s;
+  ['orang','barang','makanan','perabotan'].forEach(k => document.getElementById('svc-'+k).classList.toggle('active', k===s));
+}
+
+function selectPayment(p) {
+  selectedPayment = p;
+  ['QRIS','GoPay','DANA','Cash'].forEach(k => document.getElementById('pay-'+k).classList.toggle('active', k===p));
+}
+
+function submitOrder() {
+  const nama = document.getElementById('nama').value.trim();
+  const nohp = document.getElementById('nohp').value.trim();
+  const ket  = document.getElementById('keterangan').value.trim();
+  if (!nama) return alert('Masukkan nama kamu!');
+  if (!nohp) return alert('Masukkan nomor HP kamu!');
+  if (!selectedService) return alert('Pilih jenis layanan!');
+  if (!selectedPayment) return alert('Pilih metode pembayaran!');
+  if (!pickupLL) return alert('Tandai lokasi beli/jemput di peta!');
+  if (!dropLL) return alert('Tandai lokasi kamu di peta!');
+
+  const h={lat:HOME[0],lng:HOME[1]};
+  const km = haversine(h,pickupLL)+haversine(pickupLL,dropLL);
+  const total = Math.ceil(km)*RATE;
+  const svcMap = {orang:'Antar Jemput 🛵',barang:'Kirim Barang 📦',makanan:'Beli Makanan 🍱',perabotan:'Belanja Perabotan 🛒'};
+
+  document.getElementById('modal-summary').innerHTML = `
+    <div class="sum-row"><span>Nama</span><span>${nama}</span></div>
+    <div class="sum-row"><span>No. HP</span><span>${nohp}</span></div>
+    <div class="sum-row"><span>Layanan</span><span>${svcMap[selectedService]}</span></div>
+    <div class="sum-row"><span>Keterangan</span><span>${ket||'-'}</span></div>
+    <hr class="sum-divider">
+    <div class="sum-row"><span>Estimasi Jarak</span><span>${km.toFixed(2)} km</span></div>
+    <div class="sum-row"><span>Metode Bayar</span><span>${selectedPayment}</span></div>
+    <div class="sum-row hi"><span>Total Ongkos</span><span>Rp ${total.toLocaleString('id-ID')}</span></div>
+  `;
+
+  const msg =
+`🛵 *PESANAN KJGO – Everyday Ride*
+
+👤 *Nama:* ${nama}
+📞 *No HP:* ${nohp}
+🏷️ *Layanan:* ${svcMap[selectedService]}
+📝 *Keterangan:* ${ket||'-'}
+
+📍 *Lokasi Beli/Jemput:*
+https://maps.google.com/?q=${pickupLL.lat},${pickupLL.lng}
+
+🏠 *Lokasi Antar (Tujuan):*
+https://maps.google.com/?q=${dropLL.lat},${dropLL.lng}
+
+📏 *Estimasi Jarak:* ${km.toFixed(2)} km
+💰 *Total Ongkos:* Rp ${total.toLocaleString('id-ID')}
+💳 *Pembayaran:* ${selectedPayment}
+
+_Dipesan via KJGO Everyday Ride_ 🙏`;
+
+  document.getElementById('wa-link').href = 'https://wa.me/6287720254002?text='+encodeURIComponent(msg);
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('show'); }
 </script>
 </body>
 </html>
