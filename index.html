@@ -4,309 +4,224 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KJGO – Everyday Ride</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --green:       #00b14f;
-  --green-dark:  #008f3e;
-  --green-light: #e8f8ee;
-  --green-mid:   #c6edd4;
-  --bg:          #f2f4f7;
-  --white:       #ffffff;
-  --text:        #1a1a2e;
-  --text2:       #5a5a7a;
-  --text3:       #9898b0;
-  --border:      #e4e4ee;
-  --radius:      18px;
-  --rsm:         12px;
-  --shadow:      0 2px 16px rgba(0,0,0,0.08);
-  --orange:      #ff6b35;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g:#00b14f;--gd:#008f3e;--gl:#e8f8ee;--gm:#c6edd4;
+  --bg:#f2f4f7;--white:#fff;--text:#1a1a2e;--t2:#5a5a7a;--t3:#9898b0;
+  --border:#e4e4ee;--r:18px;--rs:12px;--shadow:0 2px 16px rgba(0,0,0,.08);
+  --orange:#ff6b35;
 }
-html, body { height: 100%; }
-body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+html,body{height:100%}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
 
-/* ── TOPBAR ── */
-.topbar {
-  background: var(--green);
-  height: 58px;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 20px;
-  position: sticky; top: 0; z-index: 500;
-  box-shadow: 0 3px 16px rgba(0,177,79,0.28);
-  flex-shrink: 0;
-}
-.topbar-logo { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -.5px; }
-.topbar-logo small { font-size: 11px; opacity: .75; font-weight: 500; margin-left: 6px; }
-.topbar-wa {
-  background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35);
-  border-radius: 100px; color: #fff; font-family: inherit; font-size: 13px;
-  font-weight: 700; padding: 7px 16px; cursor: pointer; transition: .2s;
-  display: flex; align-items: center; gap: 6px; text-decoration: none;
-}
-.topbar-wa:hover { background: rgba(255,255,255,.3); }
+/* TOPBAR */
+.topbar{background:var(--g);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:600;box-shadow:0 3px 16px rgba(0,177,79,.28);flex-shrink:0}
+.topbar-logo{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.5px}
+.topbar-logo small{font-size:11px;opacity:.75;font-weight:500;margin-left:6px}
+.topbar-wa{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);border-radius:100px;color:#fff;font-family:inherit;font-size:13px;font-weight:700;padding:7px 16px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px;text-decoration:none}
+.topbar-wa:hover{background:rgba(255,255,255,.3)}
 
-/* ── STEP NAV ── */
-.step-header {
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-.steps-nav {
-  display: flex;
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 0 12px;
-}
-.step-tab {
-  flex: 1; display: flex; flex-direction: column; align-items: center;
-  padding: 12px 4px 10px; cursor: pointer; position: relative;
-  color: var(--text3); border-bottom: 3px solid transparent;
-  gap: 5px; user-select: none; transition: color .2s;
-}
-.step-tab.active { color: var(--green); border-bottom-color: var(--green); }
-.step-tab.done   { color: var(--green); }
-.step-tab.locked { cursor: not-allowed; opacity: .4; }
-.step-num {
-  width: 26px; height: 26px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 800;
-  background: var(--bg); color: var(--text3); transition: .2s;
-}
-.step-tab.active .step-num,
-.step-tab.done .step-num { background: var(--green); color: #fff; }
-.step-lbl { font-size: 10px; font-weight: 800; text-align: center; line-height: 1.3; }
+/* STEP NAV */
+.step-header{background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0}
+.steps-nav{display:flex;max-width:760px;margin:0 auto;padding:0 12px}
+.step-tab{flex:1;display:flex;flex-direction:column;align-items:center;padding:12px 4px 10px;cursor:pointer;position:relative;color:var(--t3);border-bottom:3px solid transparent;gap:5px;user-select:none;transition:color .2s}
+.step-tab.active{color:var(--g);border-bottom-color:var(--g)}
+.step-tab.done{color:var(--g)}
+.step-tab.locked{cursor:not-allowed;opacity:.4}
+.step-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;background:var(--bg);color:var(--t3);transition:.2s}
+.step-tab.active .step-num,.step-tab.done .step-num{background:var(--g);color:#fff}
+.step-lbl{font-size:10px;font-weight:800;text-align:center;line-height:1.3}
 
-/* ── MAIN WRAPPER ── */
-.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.step-page { display: none; flex: 1; flex-direction: column; overflow: hidden; }
-.step-page.active { display: flex; }
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.step-page{display:none;flex:1;flex-direction:column;overflow:hidden}
+.step-page.active{display:flex}
 
-/* ══════════════════════════════════
-   STEP 1 – PETA & LOKASI
-══════════════════════════════════ */
-.s1-wrap {
-  display: grid;
-  grid-template-columns: 340px 1fr;
-  flex: 1;
-  overflow: hidden;
-}
-@media(max-width: 760px) {
-  .s1-wrap { grid-template-columns: 1fr; grid-template-rows: auto 1fr; overflow: auto; }
-  .s1-map-col { min-height: 420px; }
-}
+/* ── STEP 1 ── */
+.s1-wrap{display:grid;grid-template-columns:340px 1fr;flex:1;overflow:hidden}
+@media(max-width:760px){.s1-wrap{grid-template-columns:1fr;grid-template-rows:auto 1fr;overflow:auto}.s1-map-col{min-height:440px}}
 
-/* LEFT */
-.s1-left {
-  background: var(--white);
-  border-right: 1px solid var(--border);
-  display: flex; flex-direction: column;
-  overflow-y: auto;
-}
-.s1-greet {
-  background: linear-gradient(135deg, #00b14f 0%, #006d31 100%);
-  padding: 18px 18px 16px; color: #fff; flex-shrink: 0;
-}
-.badge-pill {
-  display: inline-flex; align-items: center; gap: 7px;
-  background: rgba(255,255,255,.2); border-radius: 100px;
-  padding: 4px 12px; font-size: 11px; font-weight: 700;
-  margin-bottom: 8px;
-}
-.pulse { width: 8px; height: 8px; border-radius: 50%; background: #fff; animation: blink 1.4s infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-.s1-greet h2 { font-size: 19px; font-weight: 800; margin-bottom: 2px; }
-.s1-greet p  { font-size: 12px; opacity: .8; }
+.s1-left{background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.s1-greet{background:linear-gradient(135deg,#00b14f 0%,#006d31 100%);padding:18px 18px 16px;color:#fff;flex-shrink:0}
+.badge-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.2);border-radius:100px;padding:4px 12px;font-size:11px;font-weight:700;margin-bottom:8px}
+.pulse{width:8px;height:8px;border-radius:50%;background:#fff;animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.s1-greet h2{font-size:19px;font-weight:800;margin-bottom:2px}
+.s1-greet p{font-size:12px;opacity:.8}
 
-.s1-sec { padding: 14px 14px 0; flex-shrink: 0; }
-.sec-lbl { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text3); margin-bottom: 9px; }
+.s1-sec{padding:14px 14px 0;flex-shrink:0}
+.sec-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--t3);margin-bottom:9px}
+.svc-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px}
+.svc-btn{border:2px solid var(--border);border-radius:var(--rs);background:var(--bg);padding:10px 9px;cursor:pointer;transition:all .15s;text-align:left;display:flex;align-items:center;gap:8px}
+.svc-btn:hover{border-color:var(--g);background:var(--gl)}
+.svc-btn.active{border-color:var(--g);background:var(--gl)}
+.svc-ic{width:34px;height:34px;border-radius:9px;background:var(--white);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;border:1.5px solid var(--border);transition:.15s}
+.svc-btn.active .svc-ic{background:var(--g);border-color:var(--g)}
+.svc-name{font-size:12px;font-weight:800}
+.svc-sub{font-size:10px;color:var(--t3)}
 
-.svc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 14px; }
-.svc-btn {
-  border: 2px solid var(--border); border-radius: var(--rsm);
-  background: var(--bg); padding: 10px 9px;
-  cursor: pointer; transition: all .15s; text-align: left;
-  display: flex; align-items: center; gap: 8px;
-}
-.svc-btn:hover { border-color: var(--green); background: var(--green-light); }
-.svc-btn.active { border-color: var(--green); background: var(--green-light); }
-.svc-ic {
-  width: 34px; height: 34px; border-radius: 9px; background: var(--white);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; flex-shrink: 0; border: 1.5px solid var(--border); transition: .15s;
-}
-.svc-btn.active .svc-ic { background: var(--green); border-color: var(--green); }
-.svc-name { font-size: 12px; font-weight: 800; }
-.svc-sub  { font-size: 10px; color: var(--text3); }
+.loc-list{border-top:1px solid var(--border);flex-shrink:0}
+.loc-item{display:flex;align-items:center;gap:11px;padding:11px 14px;cursor:pointer;transition:background .15s;border-bottom:1px solid var(--border)}
+.loc-item:hover{background:var(--bg)}
+.loc-item.set{background:var(--gl)}
+.loc-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.loc-name{font-size:13px;font-weight:700}
+.loc-addr{font-size:11px;color:var(--t3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
 
-.loc-list { border-top: 1px solid var(--border); flex-shrink: 0; }
-.loc-item {
-  display: flex; align-items: center; gap: 11px;
-  padding: 11px 14px; cursor: pointer; transition: background .15s;
-  border-bottom: 1px solid var(--border);
-}
-.loc-item:hover { background: var(--bg); }
-.loc-item.set   { background: var(--green-light); }
-.loc-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-.loc-name { font-size: 13px; font-weight: 700; }
-.loc-addr { font-size: 11px; color: var(--text3); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 230px; }
+.gps-row{padding:10px 14px;flex-shrink:0}
+.btn-gps{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border-radius:var(--rs);background:var(--bg);border:1.5px solid var(--border);color:var(--g);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:.15s}
+.btn-gps:hover{background:var(--gl);border-color:var(--g)}
 
-.gps-row { padding: 10px 14px; flex-shrink: 0; }
-.btn-gps {
-  width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 10px; border-radius: var(--rsm);
-  background: var(--bg); border: 1.5px solid var(--border);
-  color: var(--green); font-family: inherit; font-size: 13px; font-weight: 700;
-  cursor: pointer; transition: .15s;
-}
-.btn-gps:hover { background: var(--green-light); border-color: var(--green); }
+.s1-footer{padding:12px 14px;border-top:1px solid var(--border);margin-top:auto;flex-shrink:0}
 
-.s1-footer { padding: 12px 14px; border-top: 1px solid var(--border); margin-top: auto; flex-shrink: 0; }
+/* MAP */
+.s1-map-col{display:flex;flex-direction:column;overflow:hidden;background:#e8e8e8}
+.map-topbar{background:var(--white);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;flex-shrink:0}
+.map-title{font-size:13px;font-weight:800}
+.map-sub{font-size:11px;color:var(--t3);margin-top:1px}
+.mmode-btns{display:flex;gap:6px}
+.mmode-btn{padding:6px 13px;border-radius:100px;border:1.5px solid var(--border);background:var(--bg);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;color:var(--t2);transition:.15s}
+.mmode-btn.active{background:var(--g);border-color:var(--g);color:#fff}
+.map-tip{background:#fffbe6;border-bottom:1px solid #f5c542;padding:7px 14px;font-size:12px;font-weight:600;color:#7a5500;flex-shrink:0}
+#map{flex:1;min-height:0}
+.map-legend{background:var(--white);border-top:1px solid var(--border);padding:9px 14px;display:flex;gap:14px;flex-shrink:0;flex-wrap:wrap}
+.lgd{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2);font-weight:600}
+.lgd-dot{width:10px;height:10px;border-radius:50%}
+.price-strip{background:var(--gl);border-top:1px solid var(--gm);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;flex-shrink:0}
+.pr-item{font-size:11px;color:var(--t2)}
+.pr-item strong{display:block;font-size:15px;font-weight:800;color:var(--text)}
+.pr-item.tot strong{color:var(--g);font-size:17px}
 
-/* MAP COLUMN */
-.s1-map-col {
-  display: flex; flex-direction: column; overflow: hidden;
-  background: #e8e8e8;
-}
-.map-topbar {
-  background: var(--white); border-bottom: 1px solid var(--border);
-  padding: 10px 14px; display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 8px; flex-shrink: 0;
-}
-.map-title { font-size: 13px; font-weight: 800; }
-.map-sub   { font-size: 11px; color: var(--text3); margin-top: 1px; }
-.mmode-btns { display: flex; gap: 6px; }
-.mmode-btn {
-  padding: 6px 13px; border-radius: 100px; border: 1.5px solid var(--border);
-  background: var(--bg); font-family: inherit; font-size: 12px; font-weight: 700;
-  cursor: pointer; color: var(--text2); transition: .15s;
-}
-.mmode-btn.active { background: var(--green); border-color: var(--green); color: #fff; }
-.map-tip {
-  background: #fffbe6; border-bottom: 1px solid #f5c542;
-  padding: 7px 14px; font-size: 12px; font-weight: 600; color: #7a5500;
-  flex-shrink: 0;
-}
-#map { flex: 1; min-height: 0; }
-.map-legend {
-  background: var(--white); border-top: 1px solid var(--border);
-  padding: 9px 14px; display: flex; gap: 14px; flex-shrink: 0; flex-wrap: wrap;
-}
-.lgd { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); font-weight: 600; }
-.lgd-dot { width: 10px; height: 10px; border-radius: 50%; }
-.price-strip {
-  background: var(--green-light); border-top: 1px solid var(--green-mid);
-  padding: 10px 14px; display: flex; align-items: center;
-  justify-content: space-between; flex-wrap: wrap; gap: 8px; flex-shrink: 0;
-}
-.pr-item { font-size: 11px; color: var(--text2); }
-.pr-item strong { display: block; font-size: 15px; font-weight: 800; color: var(--text); }
-.pr-item.tot strong { color: var(--green); font-size: 17px; }
+/* FOOD MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:700;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-sheet{background:var(--white);border-radius:22px 22px 0 0;width:100%;max-width:640px;max-height:90vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.modal-overlay.open .modal-sheet{transform:translateY(0)}
+.modal-handle{width:42px;height:5px;border-radius:3px;background:var(--border);margin:12px auto 0}
+.modal-header{padding:14px 18px 10px;border-bottom:1px solid var(--border);flex-shrink:0}
+.modal-header h3{font-size:17px;font-weight:800}
+.modal-header p{font-size:12px;color:var(--t3);margin-top:2px}
+.modal-search-wrap{padding:10px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
+.modal-search{width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:10px 14px;font-family:inherit;font-size:14px;background:var(--bg);outline:none;transition:.15s}
+.modal-search:focus{border-color:var(--g);background:#fff}
+.modal-body{overflow-y:auto;flex:1;padding:14px 18px 24px}
 
-/* ══════════════════════════════════
-   SHARED – FORM CARDS (Steps 2,3,4)
-══════════════════════════════════ */
-.scroll-body {
-  flex: 1; overflow-y: auto;
-  display: flex; align-items: flex-start; justify-content: center;
-  padding: 28px 20px 56px; background: var(--bg);
-}
-.inner-card {
-  background: var(--white); border-radius: var(--radius);
-  box-shadow: var(--shadow); width: 100%; max-width: 520px; overflow: hidden;
-}
-.card-head {
-  background: linear-gradient(135deg, #00b14f, #006d31);
-  padding: 22px 22px 18px; color: #fff;
-}
-.card-head h3 { font-size: 20px; font-weight: 800; margin-bottom: 3px; }
-.card-head p  { font-size: 12px; opacity: .8; }
-.card-body { padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; }
-.f-group { display: flex; flex-direction: column; gap: 6px; }
-.f-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .9px; color: var(--text3); }
-.f-input {
-  width: 100%; border: 1.5px solid var(--border); border-radius: var(--rsm);
-  padding: 12px 14px; font-family: inherit; font-size: 14px; color: var(--text);
-  background: var(--bg); outline: none; transition: .15s; resize: none;
-}
-.f-input:focus { border-color: var(--green); background: #fff; box-shadow: 0 0 0 3px rgba(0,177,79,.1); }
-.f-input::placeholder { color: var(--text3); }
-.card-nav { padding: 0 22px 22px; display: flex; gap: 10px; }
+/* RESTO CARDS */
+.resto-section-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--t3);margin:14px 0 8px}
+.resto-card{border:1.5px solid var(--border);border-radius:var(--rs);margin-bottom:10px;overflow:hidden;cursor:pointer;transition:all .15s}
+.resto-card:hover{border-color:var(--g);box-shadow:0 4px 16px rgba(0,177,79,.12)}
+.resto-card.expanded{border-color:var(--g)}
+.resto-card-head{display:flex;align-items:center;gap:12px;padding:11px 14px}
+.resto-emoji{font-size:28px;flex-shrink:0}
+.resto-info{flex:1;min-width:0}
+.resto-name{font-size:14px;font-weight:800}
+.resto-meta{font-size:11px;color:var(--t3);margin-top:2px}
+.resto-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;background:var(--gl);color:var(--g)}
+.resto-chevron{font-size:14px;color:var(--t3);transition:transform .2s;flex-shrink:0}
+.resto-card.expanded .resto-chevron{transform:rotate(180deg)}
+.menu-list{border-top:1px solid var(--border);padding:0 14px 8px;display:none}
+.resto-card.expanded .menu-list{display:block}
+.menu-item{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);gap:8px}
+.menu-item:last-child{border-bottom:none}
+.menu-item-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.menu-item-ic{font-size:20px;flex-shrink:0}
+.menu-item-name{font-size:13px;font-weight:700}
+.menu-item-desc{font-size:11px;color:var(--t3);margin-top:1px}
+.menu-price{font-size:13px;font-weight:800;color:var(--g);flex-shrink:0}
+.btn-add-menu{width:28px;height:28px;border-radius:50%;background:var(--g);border:none;color:#fff;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s}
+.btn-add-menu:hover{background:var(--gd)}
+.menu-qty{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.qty-btn{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--g);background:transparent;color:var(--g);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.qty-num{font-size:13px;font-weight:800;min-width:18px;text-align:center}
+
+/* CART STRIP */
+.cart-strip{background:var(--g);padding:10px 18px;display:none;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;cursor:pointer}
+.cart-strip.show{display:flex}
+.cart-info{color:#fff}
+.cart-items-lbl{font-size:11px;opacity:.85}
+.cart-total{font-size:16px;font-weight:800}
+.cart-btn{background:#fff;border:none;border-radius:100px;padding:8px 18px;font-family:inherit;font-size:13px;font-weight:800;color:var(--g);cursor:pointer}
+
+/* MODAL FOOTER */
+.modal-footer{padding:12px 18px;border-top:1px solid var(--border);flex-shrink:0}
+
+/* STEPS 2-4 SHARED */
+.scroll-body{flex:1;overflow-y:auto;display:flex;align-items:flex-start;justify-content:center;padding:28px 20px 56px;background:var(--bg)}
+.inner-card{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);width:100%;max-width:520px;overflow:hidden}
+.card-head{background:linear-gradient(135deg,#00b14f,#006d31);padding:22px 22px 18px;color:#fff}
+.card-head h3{font-size:20px;font-weight:800;margin-bottom:3px}
+.card-head p{font-size:12px;opacity:.8}
+.card-body{padding:20px 22px;display:flex;flex-direction:column;gap:16px}
+.f-group{display:flex;flex-direction:column;gap:6px}
+.f-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.9px;color:var(--t3)}
+.f-input{width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:12px 14px;font-family:inherit;font-size:14px;color:var(--text);background:var(--bg);outline:none;transition:.15s;resize:none}
+.f-input:focus{border-color:var(--g);background:#fff;box-shadow:0 0 0 3px rgba(0,177,79,.1)}
+.f-input::placeholder{color:var(--t3)}
+.card-nav{padding:0 22px 22px;display:flex;gap:10px}
 
 /* PAYMENT */
-.pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.pay-opt {
-  border: 2px solid var(--border); border-radius: var(--rsm);
-  background: var(--bg); padding: 18px 12px;
-  cursor: pointer; transition: .15s;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-}
-.pay-opt:hover  { border-color: var(--green); background: var(--green-light); }
-.pay-opt.active { border-color: var(--green); background: var(--green-light); box-shadow: 0 0 0 2px rgba(0,177,79,.15); }
-.pay-emoji { font-size: 28px; }
-.pay-name  { font-size: 13px; font-weight: 800; }
-.pay-desc  { font-size: 11px; color: var(--text3); }
+.pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pay-opt{border:2px solid var(--border);border-radius:var(--rs);background:var(--bg);padding:18px 12px;cursor:pointer;transition:.15s;display:flex;flex-direction:column;align-items:center;gap:6px}
+.pay-opt:hover{border-color:var(--g);background:var(--gl)}
+.pay-opt.active{border-color:var(--g);background:var(--gl);box-shadow:0 0 0 2px rgba(0,177,79,.15)}
+.pay-emoji{font-size:28px}
+.pay-name{font-size:13px;font-weight:800}
+.pay-desc{font-size:11px;color:var(--t3)}
 
-/* CONFIRM ROWS */
-.sum-row {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  padding: 11px 0; border-bottom: 1px solid var(--border); gap: 12px;
-}
-.sum-row:last-child { border-bottom: none; }
-.sum-key { font-size: 13px; color: var(--text2); flex-shrink: 0; }
-.sum-val { font-size: 13px; font-weight: 700; text-align: right; }
-.sum-val.hi { color: var(--green); font-size: 16px; }
+/* CONFIRM */
+.sum-row{display:flex;justify-content:space-between;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--border);gap:12px}
+.sum-row:last-child{border-bottom:none}
+.sum-key{font-size:13px;color:var(--t2);flex-shrink:0}
+.sum-val{font-size:13px;font-weight:700;text-align:right}
+.sum-val.hi{color:var(--g);font-size:16px}
 
 /* BUTTONS */
-.btn-next {
-  flex: 2; background: var(--green); border: none; border-radius: var(--rsm);
-  color: #fff; font-family: inherit; font-size: 15px; font-weight: 800;
-  padding: 14px; cursor: pointer; transition: .2s;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.btn-next:hover:not(:disabled) { background: var(--green-dark); box-shadow: 0 6px 20px rgba(0,177,79,.35); transform: translateY(-1px); }
-.btn-next:disabled { opacity: .45; cursor: not-allowed; }
-.btn-back {
-  flex: 1; background: var(--bg); border: 1.5px solid var(--border);
-  border-radius: var(--rsm); color: var(--text2); font-family: inherit;
-  font-size: 14px; font-weight: 700; padding: 13px; cursor: pointer; transition: .15s;
-}
-.btn-back:hover { border-color: var(--text2); color: var(--text); }
-.btn-wa {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  width: 100%; background: #25d366; border: none; border-radius: var(--rsm);
-  color: #fff; font-family: inherit; font-size: 15px; font-weight: 800;
-  padding: 16px; cursor: pointer; transition: .2s; text-decoration: none;
-}
-.btn-wa:hover { background: #1cb851; box-shadow: 0 6px 20px rgba(37,211,102,.35); transform: translateY(-1px); }
-.confirm-icon { font-size: 48px; text-align: center; margin-bottom: 8px; }
+.btn-next{flex:2;background:var(--g);border:none;border-radius:var(--rs);color:#fff;font-family:inherit;font-size:15px;font-weight:800;padding:14px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-next:hover:not(:disabled){background:var(--gd);box-shadow:0 6px 20px rgba(0,177,79,.35);transform:translateY(-1px)}
+.btn-next:disabled{opacity:.45;cursor:not-allowed}
+.btn-back{flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rs);color:var(--t2);font-family:inherit;font-size:14px;font-weight:700;padding:13px;cursor:pointer;transition:.15s}
+.btn-back:hover{border-color:var(--t2);color:var(--text)}
+.btn-wa{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:#25d366;border:none;border-radius:var(--rs);color:#fff;font-family:inherit;font-size:15px;font-weight:800;padding:16px;cursor:pointer;transition:.2s;text-decoration:none}
+.btn-wa:hover{background:#1cb851;box-shadow:0 6px 20px rgba(37,211,102,.35);transform:translateY(-1px)}
+.confirm-icon{font-size:48px;text-align:center;margin-bottom:8px}
+
+/* GPS MODAL */
+.gps-modal{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:800;display:flex;align-items:center;justify-content:center;padding:20px}
+.gps-modal.hidden{display:none}
+.gps-box{background:var(--white);border-radius:var(--r);max-width:360px;width:100%;padding:28px 24px;text-align:center;animation:popIn .3s ease}
+@keyframes popIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.gps-icon{font-size:52px;margin-bottom:12px}
+.gps-box h3{font-size:19px;font-weight:800;margin-bottom:8px}
+.gps-box p{font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:20px}
+.btn-allow{width:100%;background:var(--g);border:none;border-radius:var(--rs);color:#fff;font-family:inherit;font-size:15px;font-weight:800;padding:14px;cursor:pointer;margin-bottom:10px;transition:.2s}
+.btn-allow:hover{background:var(--gd)}
+.btn-skip{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rs);color:var(--t2);font-family:inherit;font-size:14px;font-weight:700;padding:12px;cursor:pointer}
 
 /* TOAST */
-#toast {
-  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-  background: #1a1a2e; color: #fff; padding: 11px 22px;
-  border-radius: 100px; font-size: 13px; font-weight: 700;
-  box-shadow: 0 6px 24px rgba(0,0,0,.25); z-index: 9999;
-  opacity: 0; pointer-events: none; transition: opacity .25s;
-  white-space: nowrap;
-}
-#toast.show { opacity: 1; }
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:11px 22px;border-radius:100px;font-size:13px;font-weight:700;box-shadow:0 6px 24px rgba(0,0,0,.25);z-index:9999;opacity:0;pointer-events:none;transition:opacity .25s;white-space:nowrap}
+#toast.show{opacity:1}
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--green-mid); border-radius: 4px; }
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--gm);border-radius:4px}
 </style>
 </head>
 <body>
+
+<!-- GPS AUTO-REQUEST MODAL -->
+<div class="gps-modal" id="gps-modal">
+  <div class="gps-box">
+    <div class="gps-icon">📍</div>
+    <h3>Izinkan Lokasi GPS</h3>
+    <p>KJGO butuh akses lokasi kamu agar bisa otomatis menandai posisi tujuanmu di peta. Lebih cepat, gak perlu klik manual!</p>
+    <button class="btn-allow" onclick="requestGPS()">✅ Izinkan Akses Lokasi</button>
+    <button class="btn-skip" onclick="skipGPS()">Nanti saja, tandai manual</button>
+  </div>
+</div>
 
 <!-- TOPBAR -->
 <div class="topbar">
@@ -320,31 +235,18 @@ body {
 <!-- STEP HEADER -->
 <div class="step-header">
   <div class="steps-nav">
-    <div class="step-tab active" id="stab-1" onclick="tryGoStep(1)">
-      <div class="step-num" id="snum-1">1</div>
-      <div class="step-lbl">Lokasi &<br>Layanan</div>
-    </div>
-    <div class="step-tab locked" id="stab-2" onclick="tryGoStep(2)">
-      <div class="step-num" id="snum-2">2</div>
-      <div class="step-lbl">Data<br>Diri</div>
-    </div>
-    <div class="step-tab locked" id="stab-3" onclick="tryGoStep(3)">
-      <div class="step-num" id="snum-3">3</div>
-      <div class="step-lbl">Metode<br>Bayar</div>
-    </div>
-    <div class="step-tab locked" id="stab-4" onclick="tryGoStep(4)">
-      <div class="step-num" id="snum-4">4</div>
-      <div class="step-lbl">Konfirmasi</div>
-    </div>
+    <div class="step-tab active" id="stab-1" onclick="tryGoStep(1)"><div class="step-num" id="snum-1">1</div><div class="step-lbl">Lokasi &<br>Layanan</div></div>
+    <div class="step-tab locked" id="stab-2" onclick="tryGoStep(2)"><div class="step-num" id="snum-2">2</div><div class="step-lbl">Data<br>Diri</div></div>
+    <div class="step-tab locked" id="stab-3" onclick="tryGoStep(3)"><div class="step-num" id="snum-3">3</div><div class="step-lbl">Metode<br>Bayar</div></div>
+    <div class="step-tab locked" id="stab-4" onclick="tryGoStep(4)"><div class="step-num" id="snum-4">4</div><div class="step-lbl">Konfirmasi</div></div>
   </div>
 </div>
 
 <div class="main">
 
-<!-- ════════════ STEP 1 ════════════ -->
+<!-- ════ STEP 1 ════ -->
 <div class="step-page active" id="page-1">
   <div class="s1-wrap">
-
     <div class="s1-left">
       <div class="s1-greet">
         <div class="badge-pill"><span class="pulse"></span> Online Sekarang</div>
@@ -355,13 +257,13 @@ body {
       <div class="s1-sec">
         <div class="sec-lbl">Pilih Layanan</div>
         <div class="svc-grid">
-          <button class="svc-btn" id="svc-orang"     onclick="selectSvc('orang')">
+          <button class="svc-btn" id="svc-orang" onclick="selectSvc('orang')">
             <div class="svc-ic">🛵</div><div><div class="svc-name">Antar Jemput</div><div class="svc-sub">Ojek personal</div></div>
           </button>
-          <button class="svc-btn" id="svc-barang"    onclick="selectSvc('barang')">
+          <button class="svc-btn" id="svc-barang" onclick="selectSvc('barang')">
             <div class="svc-ic">📦</div><div><div class="svc-name">Kirim Barang</div><div class="svc-sub">Paket & dokumen</div></div>
           </button>
-          <button class="svc-btn" id="svc-makanan"   onclick="selectSvc('makanan')">
+          <button class="svc-btn" id="svc-makanan" onclick="selectSvc('makanan');openFoodModal()">
             <div class="svc-ic">🍱</div><div><div class="svc-name">Beli Makanan</div><div class="svc-sub">Titip beli makan</div></div>
           </button>
           <button class="svc-btn" id="svc-perabotan" onclick="selectSvc('perabotan')">
@@ -373,14 +275,14 @@ body {
       <div class="sec-lbl" style="padding:0 14px 8px;">Titik Lokasi</div>
       <div class="loc-list">
         <div class="loc-item" id="li-pickup" onclick="activateMode('pickup')">
-          <div class="loc-dot" style="background:var(--orange);"></div>
+          <div class="loc-dot" style="background:var(--orange)"></div>
           <div style="min-width:0">
             <div class="loc-name">📍 Lokasi Beli / Jemput</div>
             <div class="loc-addr" id="addr-pickup">Belum ditandai — klik di peta</div>
           </div>
         </div>
         <div class="loc-item" id="li-drop" onclick="activateMode('drop')">
-          <div class="loc-dot" style="background:var(--green);"></div>
+          <div class="loc-dot" style="background:var(--g)"></div>
           <div style="min-width:0">
             <div class="loc-name">🏠 Lokasi Kamu (Tujuan)</div>
             <div class="loc-addr" id="addr-drop">Belum ditandai — klik di peta</div>
@@ -396,29 +298,28 @@ body {
       </div>
 
       <div class="s1-footer">
-        <button class="btn-next" id="btn1" onclick="step1Next()" disabled>
-          Lanjut ke Data Diri &nbsp;→
-        </button>
+        <button class="btn-next" id="btn1" onclick="step1Next()" disabled>Lanjut ke Data Diri &nbsp;→</button>
       </div>
     </div>
 
     <div class="s1-map-col">
       <div class="map-topbar">
         <div>
-          <div class="map-title">🗺️ Peta Rute</div>
+          <div class="map-title">🗺️ Peta Rute & Warung</div>
           <div class="map-sub">KJGO Tapin → Lokasi Beli → Tujuan Kamu</div>
         </div>
         <div class="mmode-btns">
-          <button class="mmode-btn active" id="mm-pickup" onclick="activateMode('pickup')">📍 Tandai Beli/Jemput</button>
-          <button class="mmode-btn"        id="mm-drop"   onclick="activateMode('drop')">🏠 Tandai Tujuan</button>
+          <button class="mmode-btn active" id="mm-pickup" onclick="activateMode('pickup')">📍 Beli/Jemput</button>
+          <button class="mmode-btn" id="mm-drop" onclick="activateMode('drop')">🏠 Tujuan</button>
         </div>
       </div>
       <div class="map-tip" id="map-tip">✏️ Klik peta untuk menandai <strong>lokasi beli / jemput</strong></div>
       <div id="map"></div>
       <div class="map-legend">
-        <div class="lgd"><div class="lgd-dot" style="background:#f5c542;"></div>Base KJGO (Tapin)</div>
-        <div class="lgd"><div class="lgd-dot" style="background:var(--orange);"></div>Lokasi Beli/Jemput</div>
-        <div class="lgd"><div class="lgd-dot" style="background:var(--green);"></div>Lokasi Kamu</div>
+        <div class="lgd"><div class="lgd-dot" style="background:#f5c542"></div>Base KJGO</div>
+        <div class="lgd"><div class="lgd-dot" style="background:var(--orange)"></div>Beli/Jemput</div>
+        <div class="lgd"><div class="lgd-dot" style="background:var(--g)"></div>Tujuan</div>
+        <div class="lgd"><div class="lgd-dot" style="background:#6c5ce7"></div>Warung/Resto</div>
       </div>
       <div class="price-strip">
         <div class="pr-item"><span>Jarak total</span><strong id="dist-txt">– km</strong></div>
@@ -426,31 +327,23 @@ body {
         <div class="pr-item tot"><span>Total Ongkos</span><strong id="price-txt">Rp –</strong></div>
       </div>
     </div>
-
   </div>
 </div>
 
-<!-- ════════════ STEP 2 ════════════ -->
+<!-- ════ STEP 2 ════ -->
 <div class="step-page" id="page-2">
   <div class="scroll-body">
     <div class="inner-card">
-      <div class="card-head">
-        <h3>👤 Data Diri Pemesan</h3>
-        <p>Isi nama, nomor WhatsApp, dan catatan pesananmu.</p>
-      </div>
+      <div class="card-head"><h3>👤 Data Diri Pemesan</h3><p>Isi nama, nomor WhatsApp, dan catatan pesananmu.</p></div>
       <div class="card-body">
-        <div class="f-group">
-          <label class="f-label">Nama Lengkap</label>
-          <input class="f-input" id="nama" type="text" placeholder="Contoh: Budi Santoso" autocomplete="name"/>
+        <div class="f-group"><label class="f-label">Nama Lengkap</label><input class="f-input" id="nama" type="text" placeholder="Contoh: Budi Santoso" autocomplete="name"/></div>
+        <div class="f-group"><label class="f-label">Nomor WhatsApp</label><input class="f-input" id="nohp" type="tel" placeholder="08xxxxxxxxxx" autocomplete="tel"/></div>
+        <div class="f-group" id="food-order-group" style="display:none">
+          <label class="f-label">Pesanan Makanan 🍱</label>
+          <div id="order-summary-box" style="border:1.5px solid var(--border);border-radius:var(--rs);padding:12px 14px;background:var(--bg);font-size:13px;min-height:48px;color:var(--t2)">Belum ada pesanan</div>
+          <button type="button" style="margin-top:6px;font-family:inherit;font-size:12px;font-weight:700;color:var(--g);background:none;border:none;cursor:pointer;text-align:left;padding:0" onclick="openFoodModal()">+ Ubah / Tambah Pesanan</button>
         </div>
-        <div class="f-group">
-          <label class="f-label">Nomor WhatsApp</label>
-          <input class="f-input" id="nohp" type="tel" placeholder="08xxxxxxxxxx" autocomplete="tel"/>
-        </div>
-        <div class="f-group">
-          <label class="f-label">Catatan / Detail Pesanan</label>
-          <textarea class="f-input" id="ket" rows="3" placeholder="Contoh: Nasi goreng 2 porsi di Warung Bu Siti, tolong bawa sendok plastik..."></textarea>
-        </div>
+        <div class="f-group"><label class="f-label">Catatan Tambahan</label><textarea class="f-input" id="ket" rows="3" placeholder="Contoh: Minta sambel ekstra, tidak pedas, dll..."></textarea></div>
       </div>
       <div class="card-nav">
         <button class="btn-back" onclick="goStep(1)">← Kembali</button>
@@ -460,28 +353,17 @@ body {
   </div>
 </div>
 
-<!-- ════════════ STEP 3 ════════════ -->
+<!-- ════ STEP 3 ════ -->
 <div class="step-page" id="page-3">
   <div class="scroll-body">
     <div class="inner-card">
-      <div class="card-head">
-        <h3>💳 Metode Pembayaran</h3>
-        <p>Pilih cara pembayaran yang kamu inginkan.</p>
-      </div>
+      <div class="card-head"><h3>💳 Metode Pembayaran</h3><p>Pilih cara pembayaran yang kamu inginkan.</p></div>
       <div class="card-body">
         <div class="pay-grid">
-          <div class="pay-opt" id="pay-QRIS"  onclick="selectPay('QRIS')">
-            <div class="pay-emoji">📱</div><div class="pay-name">QRIS</div><div class="pay-desc">Scan QR Code</div>
-          </div>
-          <div class="pay-opt" id="pay-GoPay" onclick="selectPay('GoPay')">
-            <div class="pay-emoji">💚</div><div class="pay-name">GoPay</div><div class="pay-desc">Transfer GoPay</div>
-          </div>
-          <div class="pay-opt" id="pay-DANA"  onclick="selectPay('DANA')">
-            <div class="pay-emoji">💙</div><div class="pay-name">DANA</div><div class="pay-desc">Transfer DANA</div>
-          </div>
-          <div class="pay-opt" id="pay-Cash"  onclick="selectPay('Cash')">
-            <div class="pay-emoji">💵</div><div class="pay-name">Cash</div><div class="pay-desc">Bayar Tunai</div>
-          </div>
+          <div class="pay-opt" id="pay-QRIS" onclick="selectPay('QRIS')"><div class="pay-emoji">📱</div><div class="pay-name">QRIS</div><div class="pay-desc">Scan QR Code</div></div>
+          <div class="pay-opt" id="pay-GoPay" onclick="selectPay('GoPay')"><div class="pay-emoji">💚</div><div class="pay-name">GoPay</div><div class="pay-desc">Transfer GoPay</div></div>
+          <div class="pay-opt" id="pay-DANA" onclick="selectPay('DANA')"><div class="pay-emoji">💙</div><div class="pay-name">DANA</div><div class="pay-desc">Transfer DANA</div></div>
+          <div class="pay-opt" id="pay-Cash" onclick="selectPay('Cash')"><div class="pay-emoji">💵</div><div class="pay-name">Cash</div><div class="pay-desc">Bayar Tunai</div></div>
         </div>
       </div>
       <div class="card-nav">
@@ -492,18 +374,12 @@ body {
   </div>
 </div>
 
-<!-- ════════════ STEP 4 ════════════ -->
+<!-- ════ STEP 4 ════ -->
 <div class="step-page" id="page-4">
   <div class="scroll-body">
     <div class="inner-card">
-      <div class="card-head">
-        <div class="confirm-icon">🛵</div>
-        <h3>Konfirmasi Pesanan</h3>
-        <p>Cek detail pesananmu sebelum dikirim ke admin.</p>
-      </div>
-      <div class="card-body">
-        <div id="confirm-rows"></div>
-      </div>
+      <div class="card-head"><div class="confirm-icon">🛵</div><h3>Konfirmasi Pesanan</h3><p>Cek detail pesananmu sebelum dikirim ke admin.</p></div>
+      <div class="card-body"><div id="confirm-rows"></div></div>
       <div class="card-nav" style="flex-direction:column;">
         <a id="wa-link" href="#" target="_blank" class="btn-wa">
           <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
@@ -516,241 +392,566 @@ body {
 </div>
 
 </div><!-- /main -->
+
+<!-- ════ FOOD MODAL ════ -->
+<div class="modal-overlay" id="food-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <h3>🍱 Pilih Menu Makanan</h3>
+      <p>Warung & restoran di sekitar Rantau, Tapin</p>
+    </div>
+    <div class="modal-search-wrap">
+      <input class="modal-search" id="resto-search" placeholder="🔍  Cari warung atau menu... (contoh: Rocket Chicken, bakso)" oninput="filterRestos(this.value)"/>
+    </div>
+    <div class="modal-body" id="modal-body-content"></div>
+    <div class="cart-strip" id="cart-strip" onclick="closeFoodModal()">
+      <div class="cart-info">
+        <div class="cart-items-lbl" id="cart-items-lbl">0 item dipilih</div>
+        <div class="cart-total" id="cart-total-txt">Rp 0</div>
+      </div>
+      <button class="cart-btn">✅ Selesai Pilih</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
 /* ══════════ CONFIG ══════════ */
-// Tugu Air Mancur Sirang Pitu, Jl. Brigjend H. Hasan Basri, Kab. Tapin, Kalsel
-const HOME_LAT = -2.9187;
-const HOME_LNG = 115.0011;
-const RATE     = 1500;
-const ADMIN_WA = '6287720254002';
+const HOME_LAT  = -2.932446;
+const HOME_LNG  = 115.1511829;
+const RATE      = 1500;
+const ADMIN_WA  = '6287720254002';
+
+/* ══════════ RESTAURANT DATA ══════════ */
+const RESTOS = [
+  {
+    id:'rc1', name:'Rocket Chicken Rantau 1', emoji:'🍗',
+    lat:-2.9326, lng:115.1495,
+    addr:'Jl. Brigjen H. Hasan Basri, Rantau',
+    hours:'09.00–22.00', cat:'Ayam Goreng',
+    menu:[
+      {id:'rc1-1',name:'Paket Ayam + Nasi',desc:'1 potong ayam goreng + nasi putih',price:15000,emoji:'🍗'},
+      {id:'rc1-2',name:'Paket Ayam + Nasi + Minuman',desc:'Komplit dengan minuman dingin',price:19000,emoji:'🍱'},
+      {id:'rc1-3',name:'Crispy Burger',desc:'Burger ayam crispy renyah',price:13000,emoji:'🍔'},
+      {id:'rc1-4',name:'Kentang Goreng',desc:'Kentang goreng crispy',price:8000,emoji:'🍟'},
+      {id:'rc1-5',name:'Es Teh Manis',desc:'Teh manis segar',price:5000,emoji:'🥤'},
+    ]
+  },
+  {
+    id:'rc2', name:'Rocket Chicken Rantau 2', emoji:'🍗',
+    lat:-2.9285, lng:115.1558,
+    addr:'Jl. A. Yani No.16, Kupang, Tapin Utara',
+    hours:'09.00–22.00', cat:'Ayam Goreng',
+    menu:[
+      {id:'rc2-1',name:'Paket Hemat Ayam',desc:'Ayam goreng + nasi + teh',price:18000,emoji:'🍗'},
+      {id:'rc2-2',name:'Paket BBQ Ayam',desc:'Ayam bumbu BBQ + nasi',price:20000,emoji:'🥩'},
+      {id:'rc2-3',name:'Nasi Kotak',desc:'Nasi + lauk + sayur',price:15000,emoji:'🍱'},
+      {id:'rc2-4',name:'Es Jeruk',desc:'Jeruk segar diperas',price:6000,emoji:'🍊'},
+    ]
+  },
+  {
+    id:'tapin1', name:'RM Tapin Rasa', emoji:'🍲',
+    lat:-2.9340, lng:115.1530,
+    addr:'Jl. Brigjen H. Hasan Basri, Rantau',
+    hours:'Buka 24 Jam', cat:'Masakan Banjar',
+    menu:[
+      {id:'t1-1',name:'Nasi + Ayam Bakar',desc:'Ayam bakar bumbu Banjar + nasi',price:25000,emoji:'🍗'},
+      {id:'t1-2',name:'Bakso Sapi Spesial',desc:'Bakso daging sapi + mie + kuah',price:20000,emoji:'🍜'},
+      {id:'t1-3',name:'Soto Banjar',desc:'Soto ayam khas Kalimantan Selatan',price:18000,emoji:'🍲'},
+      {id:'t1-4',name:'Nasi + Ikan Bakar',desc:'Ikan bakar bumbu kecap + nasi',price:28000,emoji:'🐟'},
+      {id:'t1-5',name:'Es Campur',desc:'Es campur serba segar',price:12000,emoji:'🧊'},
+    ]
+  },
+  {
+    id:'sorayaa', name:'Warung Makan Hajjah Sorayaa', emoji:'🥘',
+    lat:-2.9308, lng:115.1600,
+    addr:'Jl. Jend. Sudirman (Bypass), Simpang 3 Rantau Baru',
+    hours:'10.00–18.00', cat:'Masakan Banjar',
+    menu:[
+      {id:'so-1',name:'Nasi Ayam Penyet',desc:'Ayam penyet + nasi + lalapan + sambal',price:22000,emoji:'🍗'},
+      {id:'so-2',name:'Nasi Ikan Patin',desc:'Ikan patin bumbu kuning + nasi',price:25000,emoji:'🐟'},
+      {id:'so-3',name:'Nasi + Tempe Orek',desc:'Tempe orek pedas + nasi putih',price:12000,emoji:'🫘'},
+      {id:'so-4',name:'Paket Sayur Bebas',desc:'Nasi + lauk + sayur ambil sendiri',price:20000,emoji:'🥗'},
+      {id:'so-5',name:'Es Teh Tarik',desc:'Teh tarik manis gurih',price:8000,emoji:'🧋'},
+    ]
+  },
+  {
+    id:'hafiz', name:'RM Hafiz Masakan Padang', emoji:'🍛',
+    lat:-2.9355, lng:115.1480,
+    addr:'Jl. Brigjen H. Hasan Basri, Rantau',
+    hours:'08.00–21.00', cat:'Masakan Padang',
+    menu:[
+      {id:'hz-1',name:'Nasi Padang Komplit',desc:'Nasi + rendang + gulai + lalapan',price:30000,emoji:'🍛'},
+      {id:'hz-2',name:'Rendang Sapi',desc:'Rendang sapi empuk bumbu kaya',price:35000,emoji:'🥩'},
+      {id:'hz-3',name:'Ayam Pop',desc:'Ayam goreng khas Padang + nasi',price:27000,emoji:'🍗'},
+      {id:'hz-4',name:'Gulai Tunjang',desc:'Gulai kaki sapi kental',price:32000,emoji:'🍲'},
+      {id:'hz-5',name:'Teh Panas',desc:'Teh panas manis',price:5000,emoji:'☕'},
+    ]
+  },
+  {
+    id:'bebek1', name:'Bebek Bakar Kuliner Resto', emoji:'🦆',
+    lat:-2.9270, lng:115.1540,
+    addr:'Tapin Utara, Kabupaten Tapin',
+    hours:'10.00–22.00', cat:'Bebek Bakar',
+    menu:[
+      {id:'bb-1',name:'Bebek Bakar Spesial',desc:'Bebek bakar bumbu rempah + nasi',price:38000,emoji:'🦆'},
+      {id:'bb-2',name:'Bebek Goreng',desc:'Bebek goreng crispy + nasi',price:35000,emoji:'🍗'},
+      {id:'bb-3',name:'Rica-Rica Bebek',desc:'Bebek rica-rica pedas + nasi',price:40000,emoji:'🌶️'},
+      {id:'bb-4',name:'Paket Bebek + Minuman',desc:'Bebek + nasi + es teh',price:43000,emoji:'🍱'},
+    ]
+  },
+  {
+    id:'bakso1', name:'Depot Bakso & Mie Tapin', emoji:'🍜',
+    lat:-2.9315, lng:115.1565,
+    addr:'Jl. Jend. Sudirman, Rantau, Tapin',
+    hours:'09.00–21.00', cat:'Bakso & Mie',
+    menu:[
+      {id:'bk-1',name:'Bakso Spesial',desc:'Bakso urat + daging + mie + kuah kaldu',price:20000,emoji:'🍜'},
+      {id:'bk-2',name:'Mie Yamin',desc:'Mie yamin ayam + pangsit',price:17000,emoji:'🍝'},
+      {id:'bk-3',name:'Mie Goreng Spesial',desc:'Mie goreng + telur + ayam suwir',price:19000,emoji:'🍳'},
+      {id:'bk-4',name:'Pangsit Goreng',desc:'Pangsit goreng crispy isi daging',price:13000,emoji:'🥟'},
+      {id:'bk-5',name:'Es Jeruk Segar',desc:'Jeruk peras dingin',price:7000,emoji:'🍊'},
+    ]
+  },
+  {
+    id:'nasi1', name:'Warung Nasi Kuning Rantau', emoji:'🟡',
+    lat:-2.9290, lng:115.1498,
+    addr:'Pasar Rantau, Tapin',
+    hours:'06.00–12.00', cat:'Sarapan',
+    menu:[
+      {id:'nk-1',name:'Nasi Kuning Komplit',desc:'Nasi kuning + ayam + telur + tempe',price:15000,emoji:'🟡'},
+      {id:'nk-2',name:'Nasi Kuning Biasa',desc:'Nasi kuning + lauk pilihan',price:10000,emoji:'🍚'},
+      {id:'nk-3',name:'Ketupat Kandangan',desc:'Ketupat + kuah ikan haruan khas Banjar',price:18000,emoji:'🫕'},
+      {id:'nk-4',name:'Kopi Hitam Pahit',desc:'Kopi hitam khas warung pagi',price:5000,emoji:'☕'},
+    ]
+  },
+  {
+    id:'geprek1', name:'Ayam Geprek Tapin', emoji:'🌶️',
+    lat:-2.9360, lng:115.1550,
+    addr:'Jl. A. Yani, Rantau Kiwa, Tapin',
+    hours:'10.00–22.00', cat:'Ayam Geprek',
+    menu:[
+      {id:'ag-1',name:'Ayam Geprek Original',desc:'Ayam geprek + nasi + lalapan',price:18000,emoji:'🍗'},
+      {id:'ag-2',name:'Ayam Geprek Keju',desc:'Geprek + keju mozarella meleleh',price:23000,emoji:'🧀'},
+      {id:'ag-3',name:'Geprek Level 10',desc:'Super pedas untuk jiwa pemberani',price:20000,emoji:'🌶️'},
+      {id:'ag-4',name:'Nasi + Telur Ceplok',desc:'Nasi putih + telur mata sapi',price:10000,emoji:'🍳'},
+      {id:'ag-5',name:'Es Teh Manis',desc:'Teh manis dingin',price:5000,emoji:'🥤'},
+    ]
+  }
+];
 
 /* ══════════ STATE ══════════ */
-let step       = 1;
-let maxStep    = 1;
-let selSvc     = '';
-let selPay     = '';
-let pickupLL   = null;
-let dropLL     = null;
-let mapMode    = 'pickup';
-let totalKm    = 0;
-let totalPrice = 0;
-let toastTimer;
+let step=1, maxStep=1, selSvc='', selPay='';
+let pickupLL=null, dropLL=null, mapMode='pickup';
+let totalKm=0, totalPrice=0, toastTimer;
+let cart={};  // {itemId: qty}
 
-/* ══════════ MAP SETUP ══════════ */
-const map = L.map('map', { zoomControl: true, attributionControl: false });
+/* ══════════ MAP ══════════ */
+const map = L.map('map',{zoomControl:true,attributionControl:false});
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 map.setView([HOME_LAT, HOME_LNG], 14);
 
-function makeIcon(color) {
+const icBase = L.divIcon({
+  html:`<div style="width:22px;height:22px;border-radius:50%;background:#f5c542;border:3px solid #fff;box-shadow:0 2px 12px rgba(0,0,0,.4);"></div>`,
+  className:'',iconAnchor:[11,11]
+});
+function makeIcon(color,size=16){
   return L.divIcon({
-    html: `<div style="width:16px;height:16px;border-radius:50%;background:${color};border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.35);"></div>`,
-    className: '', iconAnchor: [8, 8]
+    html:`<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.35);"></div>`,
+    className:'',iconAnchor:[size/2,size/2]
   });
 }
-const icBase   = L.divIcon({
-  html: `<div style="width:20px;height:20px;border-radius:50%;background:#f5c542;border:3px solid #fff;box-shadow:0 2px 12px rgba(0,0,0,.4);"></div>`,
-  className: '', iconAnchor: [10, 10]
+function makeRestoIcon(emoji){
+  return L.divIcon({
+    html:`<div style="background:#fff;border:2px solid #6c5ce7;border-radius:10px;padding:3px 6px;font-size:15px;box-shadow:0 2px 10px rgba(0,0,0,.2);white-space:nowrap;">${emoji}</div>`,
+    className:'',iconAnchor:[16,16]
+  });
+}
+
+L.marker([HOME_LAT,HOME_LNG],{icon:icBase}).addTo(map)
+  .bindPopup('<b>🏍️ Base KJGO</b><br>Bundaran Sirang Pitu, Tapin');
+
+// Place restaurant markers
+RESTOS.forEach(r=>{
+  L.marker([r.lat,r.lng],{icon:makeRestoIcon(r.emoji)}).addTo(map)
+    .bindPopup(`<b>${r.emoji} ${r.name}</b><br><small>${r.addr}</small><br><small>⏰ ${r.hours}</small>`);
 });
 
-L.marker([HOME_LAT, HOME_LNG], { icon: icBase })
-  .addTo(map)
-  .bindPopup('<b>🏠 Base KJGO</b><br>Tugu Air Mancur Sirang Pitu, Tapin');
+let mPickup=null, mDrop=null, routeLine=null;
 
-let mPickup = null, mDrop = null, routeLine = null;
-
-map.on('click', e => {
-  if (mapMode === 'pickup') {
-    if (mPickup) map.removeLayer(mPickup);
-    pickupLL = e.latlng;
-    mPickup  = L.marker(e.latlng, { icon: makeIcon('#ff6b35') })
-      .addTo(map).bindPopup('📍 Lokasi Beli/Jemput').openPopup();
-    geocode(e.latlng, 'pickup');
+map.on('click',e=>{
+  if(mapMode==='pickup'){
+    if(mPickup) map.removeLayer(mPickup);
+    pickupLL=e.latlng;
+    mPickup=L.marker(e.latlng,{icon:makeIcon('#ff6b35',18)}).addTo(map).bindPopup('📍 Lokasi Beli/Jemput').openPopup();
+    geocode(e.latlng,'pickup');
     document.getElementById('li-pickup').classList.add('set');
     activateMode('drop');
   } else {
-    if (mDrop) map.removeLayer(mDrop);
-    dropLL = e.latlng;
-    mDrop  = L.marker(e.latlng, { icon: makeIcon('#00b14f') })
-      .addTo(map).bindPopup('🏠 Lokasi Kamu').openPopup();
-    geocode(e.latlng, 'drop');
+    if(mDrop) map.removeLayer(mDrop);
+    dropLL=e.latlng;
+    mDrop=L.marker(e.latlng,{icon:makeIcon('#00b14f',18)}).addTo(map).bindPopup('🏠 Lokasi Kamu').openPopup();
+    geocode(e.latlng,'drop');
     document.getElementById('li-drop').classList.add('set');
   }
   drawRoute(); calcPrice(); checkStep1();
 });
 
-function geocode(latlng, type) {
-  const el = document.getElementById('addr-' + type);
-  el.textContent = latlng.lat.toFixed(5) + ', ' + latlng.lng.toFixed(5);
+function geocode(latlng,type){
+  const el=document.getElementById('addr-'+type);
+  el.textContent=latlng.lat.toFixed(5)+', '+latlng.lng.toFixed(5);
   fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latlng.lat}&lon=${latlng.lng}&format=json`)
-    .then(r => r.json())
-    .then(d => { if (d && d.display_name) el.textContent = d.display_name.split(',').slice(0,3).join(', '); })
-    .catch(() => {});
+    .then(r=>r.json()).then(d=>{if(d&&d.display_name) el.textContent=d.display_name.split(',').slice(0,3).join(', ');}).catch(()=>{});
 }
 
-function drawRoute() {
-  if (routeLine) { map.removeLayer(routeLine); routeLine = null; }
-  const pts = [[HOME_LAT, HOME_LNG]];
-  if (pickupLL) pts.push([pickupLL.lat, pickupLL.lng]);
-  if (dropLL)   pts.push([dropLL.lat,   dropLL.lng]);
-  if (pts.length > 1) {
-    routeLine = L.polyline(pts, { color: '#00b14f', weight: 4, dashArray: '10 6', opacity: .85 }).addTo(map);
-    map.fitBounds(routeLine.getBounds(), { padding: [52, 52] });
+function drawRoute(){
+  if(routeLine){map.removeLayer(routeLine);routeLine=null;}
+  const pts=[[HOME_LAT,HOME_LNG]];
+  if(pickupLL) pts.push([pickupLL.lat,pickupLL.lng]);
+  if(dropLL)   pts.push([dropLL.lat,dropLL.lng]);
+  if(pts.length>1){
+    routeLine=L.polyline(pts,{color:'#00b14f',weight:4,dashArray:'10 6',opacity:.85}).addTo(map);
+    map.fitBounds(routeLine.getBounds(),{padding:[52,52]});
   }
 }
 
-function haversine(lat1, lng1, lat2, lng2) {
-  const R = 6371, toRad = d => d * Math.PI / 180;
-  const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
-  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+function haversine(la1,lo1,la2,lo2){
+  const R=6371,rad=d=>d*Math.PI/180;
+  const dLa=rad(la2-la1),dLo=rad(lo2-lo1);
+  const a=Math.sin(dLa/2)**2+Math.cos(rad(la1))*Math.cos(rad(la2))*Math.sin(dLo/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
-function calcPrice() {
-  if (!pickupLL || !dropLL) return;
-  totalKm    = haversine(HOME_LAT, HOME_LNG, pickupLL.lat, pickupLL.lng)
-             + haversine(pickupLL.lat, pickupLL.lng, dropLL.lat, dropLL.lng);
-  totalPrice = Math.ceil(totalKm) * RATE;
-  document.getElementById('dist-txt').textContent  = totalKm.toFixed(2) + ' km';
-  document.getElementById('price-txt').textContent = 'Rp ' + totalPrice.toLocaleString('id-ID');
+function calcPrice(){
+  if(!pickupLL||!dropLL) return;
+  totalKm=haversine(HOME_LAT,HOME_LNG,pickupLL.lat,pickupLL.lng)
+         +haversine(pickupLL.lat,pickupLL.lng,dropLL.lat,dropLL.lng);
+  totalPrice=Math.ceil(totalKm)*RATE;
+  document.getElementById('dist-txt').textContent=totalKm.toFixed(2)+' km';
+  document.getElementById('price-txt').textContent='Rp '+totalPrice.toLocaleString('id-ID');
 }
 
-function activateMode(mode) {
-  mapMode = mode;
-  document.getElementById('mm-pickup').classList.toggle('active', mode === 'pickup');
-  document.getElementById('mm-drop').classList.toggle('active',   mode === 'drop');
-  document.getElementById('li-pickup').style.outline = mode === 'pickup' ? '2px solid #ff6b35' : '';
-  document.getElementById('li-drop').style.outline   = mode === 'drop'   ? '2px solid #00b14f' : '';
-  document.getElementById('map-tip').innerHTML = mode === 'pickup'
-    ? '✏️ Klik peta untuk menandai <strong>lokasi beli / jemput</strong>'
-    : '✏️ Klik peta untuk menandai <strong>lokasi tujuan (rumah kamu)</strong>';
+function activateMode(mode){
+  mapMode=mode;
+  document.getElementById('mm-pickup').classList.toggle('active',mode==='pickup');
+  document.getElementById('mm-drop').classList.toggle('active',mode==='drop');
+  document.getElementById('li-pickup').style.outline=mode==='pickup'?'2px solid #ff6b35':'';
+  document.getElementById('li-drop').style.outline=mode==='drop'?'2px solid #00b14f':'';
+  document.getElementById('map-tip').innerHTML=mode==='pickup'
+    ?'✏️ Klik peta untuk menandai <strong>lokasi beli / jemput</strong>'
+    :'✏️ Klik peta untuk menandai <strong>lokasi tujuan (rumah kamu)</strong>';
 }
 
-function useGPS() {
-  if (!navigator.geolocation) { toast('GPS tidak tersedia di browser ini'); return; }
+/* ══════════ GPS ══════════ */
+function requestGPS(){
+  document.getElementById('gps-modal').classList.add('hidden');
+  if(!navigator.geolocation){toast('GPS tidak tersedia di browser ini');return;}
   toast('⏳ Mendeteksi lokasi GPS...');
-  navigator.geolocation.getCurrentPosition(pos => {
-    const ll = L.latLng(pos.coords.latitude, pos.coords.longitude);
-    map.setView(ll, 16);
-    if (mDrop) map.removeLayer(mDrop);
-    dropLL = ll;
-    mDrop  = L.marker(ll, { icon: makeIcon('#00b14f') })
-      .addTo(map).bindPopup('🏠 Lokasi Kamu (GPS)').openPopup();
-    geocode(ll, 'drop');
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const ll=L.latLng(pos.coords.latitude,pos.coords.longitude);
+    map.setView(ll,16);
+    if(mDrop) map.removeLayer(mDrop);
+    dropLL=ll;
+    mDrop=L.marker(ll,{icon:makeIcon('#00b14f',18)}).addTo(map).bindPopup('🏠 Lokasi Kamu (GPS)').openPopup();
+    geocode(ll,'drop');
     document.getElementById('li-drop').classList.add('set');
     drawRoute(); calcPrice(); checkStep1();
     toast('✅ Lokasi GPS berhasil ditandai!');
     activateMode('pickup');
-  }, () => toast('❌ Gagal ambil GPS. Izinkan akses lokasi di browser.'),
-  { enableHighAccuracy: true, timeout: 10000 });
+  },()=>{
+    toast('⚠️ GPS ditolak. Silakan tandai manual di peta.');
+  },{enableHighAccuracy:true,timeout:10000});
 }
 
-/* ══════════ SERVICE SELECT ══════════ */
-function selectSvc(s) {
-  selSvc = s;
-  ['orang','barang','makanan','perabotan'].forEach(k =>
-    document.getElementById('svc-' + k).classList.toggle('active', k === s)
+function skipGPS(){
+  document.getElementById('gps-modal').classList.add('hidden');
+}
+
+function useGPS(){
+  if(!navigator.geolocation){toast('GPS tidak tersedia di browser ini');return;}
+  toast('⏳ Mendeteksi lokasi GPS...');
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const ll=L.latLng(pos.coords.latitude,pos.coords.longitude);
+    map.setView(ll,16);
+    if(mDrop) map.removeLayer(mDrop);
+    dropLL=ll;
+    mDrop=L.marker(ll,{icon:makeIcon('#00b14f',18)}).addTo(map).bindPopup('🏠 Lokasi Kamu (GPS)').openPopup();
+    geocode(ll,'drop');
+    document.getElementById('li-drop').classList.add('set');
+    drawRoute(); calcPrice(); checkStep1();
+    toast('✅ Lokasi GPS berhasil ditandai!');
+    activateMode('pickup');
+  },()=>toast('❌ Gagal ambil GPS. Izinkan akses lokasi di browser.'),
+  {enableHighAccuracy:true,timeout:10000});
+}
+
+/* ══════════ SERVICE ══════════ */
+function selectSvc(s){
+  selSvc=s;
+  ['orang','barang','makanan','perabotan'].forEach(k=>
+    document.getElementById('svc-'+k).classList.toggle('active',k===s)
   );
+  document.getElementById('food-order-group').style.display=s==='makanan'?'':'none';
   checkStep1();
 }
 
-function checkStep1() {
-  document.getElementById('btn1').disabled = !(pickupLL && dropLL && selSvc);
+function checkStep1(){
+  document.getElementById('btn1').disabled=!(pickupLL&&dropLL&&selSvc);
 }
 
-/* ══════════ STEP NAVIGATION ══════════ */
-function goStep(n) {
-  document.querySelectorAll('.step-page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + n).classList.add('active');
-  if (n > maxStep) maxStep = n;
-  step = n;
+/* ══════════ FOOD MODAL ══════════ */
+function openFoodModal(){
+  renderRestos(RESTOS);
+  document.getElementById('food-modal').classList.add('open');
+  document.getElementById('resto-search').value='';
+}
 
-  document.querySelectorAll('.step-tab').forEach((t, i) => {
-    const s = i + 1;
-    t.classList.remove('active','done','locked');
-    if (s === n) t.classList.add('active');
-    else if (s < n) t.classList.add('done');
-    else if (s > maxStep) t.classList.add('locked');
-    document.getElementById('snum-' + s).innerHTML = s < n ? '✓' : s;
+function closeFoodModal(){
+  document.getElementById('food-modal').classList.remove('open');
+  updateOrderSummary();
+}
+
+function renderRestos(list){
+  const body=document.getElementById('modal-body-content');
+  if(list.length===0){
+    body.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--t3);font-size:14px;">Tidak ditemukan warung yang sesuai 😅</div>';
+    return;
+  }
+
+  // Group by category
+  const cats={};
+  list.forEach(r=>{
+    if(!cats[r.cat]) cats[r.cat]=[];
+    cats[r.cat].push(r);
   });
 
-  if (n === 4) buildConfirm();
-  window.scrollTo(0, 0);
+  let html='';
+  Object.keys(cats).forEach(cat=>{
+    html+=`<div class="resto-section-lbl">${cat}</div>`;
+    cats[cat].forEach(r=>{
+      const totalItems=r.menu.reduce((s,m)=>s+(cart[m.id]||0),0);
+      html+=`
+        <div class="resto-card" id="rcard-${r.id}" onclick="toggleResto('${r.id}')">
+          <div class="resto-card-head">
+            <div class="resto-emoji">${r.emoji}</div>
+            <div class="resto-info">
+              <div class="resto-name">${r.name}</div>
+              <div class="resto-meta">📍 ${r.addr} &nbsp;·&nbsp; ⏰ ${r.hours}</div>
+            </div>
+            ${totalItems>0?`<span class="resto-badge">${totalItems} item</span>`:''}
+            <span class="resto-chevron">▾</span>
+          </div>
+          <div class="menu-list">
+            ${r.menu.map(m=>`
+              <div class="menu-item" id="mitem-${m.id}">
+                <div class="menu-item-left">
+                  <div class="menu-item-ic">${m.emoji}</div>
+                  <div>
+                    <div class="menu-item-name">${m.name}</div>
+                    <div class="menu-item-desc">${m.desc}</div>
+                  </div>
+                </div>
+                <div class="menu-price">Rp ${m.price.toLocaleString('id-ID')}</div>
+                <div id="mctl-${m.id}">${renderMenuCtl(m.id)}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>`;
+    });
+  });
+  body.innerHTML=html;
 }
 
-function tryGoStep(n) {
-  if (n === step) return;
-  if (n < step) { goStep(n); return; }
-  if (n > maxStep + 1) { toast('Lengkapi langkah sebelumnya dulu!'); return; }
-  // forward: validate current
-  if (step === 1) { step1Next(); return; }
-  if (step === 2) { step2Next(); return; }
-  if (step === 3) { step3Next(); return; }
+function renderMenuCtl(id){
+  const qty=cart[id]||0;
+  if(qty===0) return `<button class="btn-add-menu" onclick="event.stopPropagation();addItem('${id}')">+</button>`;
+  return `<div class="menu-qty">
+    <button class="qty-btn" onclick="event.stopPropagation();removeItem('${id}')">−</button>
+    <span class="qty-num">${qty}</span>
+    <button class="qty-btn" onclick="event.stopPropagation();addItem('${id}')">+</button>
+  </div>`;
 }
 
-function step1Next() {
-  if (!pickupLL) { toast('Tandai lokasi beli/jemput di peta!'); return; }
-  if (!dropLL)   { toast('Tandai lokasi tujuan kamu di peta!'); return; }
-  if (!selSvc)   { toast('Pilih jenis layanan terlebih dahulu!'); return; }
+function toggleResto(id){
+  const el=document.getElementById('rcard-'+id);
+  el.classList.toggle('expanded');
+}
+
+function addItem(id){
+  cart[id]=(cart[id]||0)+1;
+  refreshMenuCtl(id);
+  refreshCart();
+}
+function removeItem(id){
+  if(!cart[id]) return;
+  cart[id]--;
+  if(cart[id]===0) delete cart[id];
+  refreshMenuCtl(id);
+  refreshCart();
+}
+function refreshMenuCtl(id){
+  const el=document.getElementById('mctl-'+id);
+  if(el) el.innerHTML=renderMenuCtl(id);
+  // refresh badge on resto card
+  const allRestos=RESTOS;
+  allRestos.forEach(r=>{
+    const total=r.menu.reduce((s,m)=>s+(cart[m.id]||0),0);
+    const card=document.getElementById('rcard-'+r.id);
+    if(!card) return;
+    const head=card.querySelector('.resto-card-head');
+    let badge=head.querySelector('.resto-badge');
+    if(total>0){
+      if(!badge){
+        badge=document.createElement('span');
+        badge.className='resto-badge';
+        const chevron=head.querySelector('.resto-chevron');
+        head.insertBefore(badge,chevron);
+      }
+      badge.textContent=total+' item';
+    } else if(badge){
+      badge.remove();
+    }
+  });
+}
+function refreshCart(){
+  const items=Object.values(cart).reduce((a,b)=>a+b,0);
+  let total=0;
+  RESTOS.forEach(r=>r.menu.forEach(m=>{if(cart[m.id]) total+=m.price*(cart[m.id]||0);}));
+  document.getElementById('cart-items-lbl').textContent=items+' item dipilih';
+  document.getElementById('cart-total-txt').textContent='Rp '+total.toLocaleString('id-ID');
+  document.getElementById('cart-strip').classList.toggle('show',items>0);
+}
+
+function filterRestos(q){
+  q=q.trim().toLowerCase();
+  if(!q){renderRestos(RESTOS);return;}
+  const filtered=RESTOS.filter(r=>
+    r.name.toLowerCase().includes(q)||
+    r.cat.toLowerCase().includes(q)||
+    r.menu.some(m=>m.name.toLowerCase().includes(q)||m.desc.toLowerCase().includes(q))
+  );
+  renderRestos(filtered);
+}
+
+function updateOrderSummary(){
+  const el=document.getElementById('order-summary-box');
+  const lines=[];
+  RESTOS.forEach(r=>{
+    r.menu.forEach(m=>{
+      if(cart[m.id]){
+        lines.push(`${m.emoji} ${m.name} x${cart[m.id]} — Rp ${(m.price*cart[m.id]).toLocaleString('id-ID')}`);
+      }
+    });
+  });
+  el.innerHTML=lines.length?lines.map(l=>`<div style="padding:3px 0;border-bottom:1px solid var(--border)">${l}</div>`).join(''):'<span>Belum ada pesanan</span>';
+}
+
+/* ══════════ STEP NAV ══════════ */
+function goStep(n){
+  document.querySelectorAll('.step-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+n).classList.add('active');
+  if(n>maxStep) maxStep=n;
+  step=n;
+  document.querySelectorAll('.step-tab').forEach((t,i)=>{
+    const s=i+1;
+    t.classList.remove('active','done','locked');
+    if(s===n) t.classList.add('active');
+    else if(s<n) t.classList.add('done');
+    else if(s>maxStep) t.classList.add('locked');
+    document.getElementById('snum-'+s).innerHTML=s<n?'✓':s;
+  });
+  if(n===4) buildConfirm();
+  window.scrollTo(0,0);
+}
+
+function tryGoStep(n){
+  if(n===step) return;
+  if(n<step){goStep(n);return;}
+  if(n>maxStep+1){toast('Lengkapi langkah sebelumnya dulu!');return;}
+  if(step===1){step1Next();return;}
+  if(step===2){step2Next();return;}
+  if(step===3){step3Next();return;}
+}
+
+function step1Next(){
+  if(!pickupLL){toast('Tandai lokasi beli/jemput di peta!');return;}
+  if(!dropLL){toast('Tandai lokasi tujuan kamu di peta!');return;}
+  if(!selSvc){toast('Pilih jenis layanan terlebih dahulu!');return;}
+  if(selSvc==='makanan'&&Object.keys(cart).length===0){
+    toast('Pilih menu makanan dulu! 🍱');openFoodModal();return;
+  }
   goStep(2);
 }
 
-function step2Next() {
-  const nama = document.getElementById('nama').value.trim();
-  const nohp = document.getElementById('nohp').value.trim();
-  if (!nama) { toast('Masukkan nama kamu terlebih dahulu!'); return; }
-  if (!nohp) { toast('Masukkan nomor WhatsApp kamu!'); return; }
+function step2Next(){
+  const nama=document.getElementById('nama').value.trim();
+  const nohp=document.getElementById('nohp').value.trim();
+  if(!nama){toast('Masukkan nama kamu terlebih dahulu!');return;}
+  if(!nohp){toast('Masukkan nomor WhatsApp kamu!');return;}
   goStep(3);
 }
 
-function selectPay(p) {
-  selPay = p;
-  ['QRIS','GoPay','DANA','Cash'].forEach(k =>
-    document.getElementById('pay-' + k).classList.toggle('active', k === p)
+function selectPay(p){
+  selPay=p;
+  ['QRIS','GoPay','DANA','Cash'].forEach(k=>
+    document.getElementById('pay-'+k).classList.toggle('active',k===p)
   );
-  document.getElementById('btn3').disabled = false;
+  document.getElementById('btn3').disabled=false;
 }
 
-function step3Next() {
-  if (!selPay) { toast('Pilih metode pembayaran dulu!'); return; }
+function step3Next(){
+  if(!selPay){toast('Pilih metode pembayaran dulu!');return;}
   goStep(4);
 }
 
 /* ══════════ CONFIRM ══════════ */
-const SVC_LABEL = {
-  orang:     'Antar Jemput 🛵',
-  barang:    'Kirim Barang 📦',
-  makanan:   'Beli Makanan 🍱',
-  perabotan: 'Belanja Perabotan 🛒',
+const SVC_LABEL={
+  orang:'Antar Jemput 🛵',barang:'Kirim Barang 📦',
+  makanan:'Beli Makanan 🍱',perabotan:'Belanja Perabotan 🛒'
 };
 
-function buildConfirm() {
-  const nama  = document.getElementById('nama').value.trim();
-  const nohp  = document.getElementById('nohp').value.trim();
-  const ket   = document.getElementById('ket').value.trim();
-  const addrP = document.getElementById('addr-pickup').textContent;
-  const addrD = document.getElementById('addr-drop').textContent;
+function buildConfirm(){
+  const nama=document.getElementById('nama').value.trim();
+  const nohp=document.getElementById('nohp').value.trim();
+  const ket=document.getElementById('ket').value.trim();
+  const addrP=document.getElementById('addr-pickup').textContent;
+  const addrD=document.getElementById('addr-drop').textContent;
 
-  document.getElementById('confirm-rows').innerHTML = `
+  // Build food order lines
+  let foodLines='',foodMsg='';
+  if(selSvc==='makanan'){
+    const lines=[];
+    RESTOS.forEach(r=>{
+      r.menu.forEach(m=>{
+        if(cart[m.id]) lines.push(`  • ${m.name} x${cart[m.id]} (Rp ${(m.price*cart[m.id]).toLocaleString('id-ID')})`);
+      });
+    });
+    foodLines=lines.join('\n');
+    foodMsg=lines.length?`\n📋 *Menu Pesanan:*\n${foodLines}`:'';
+  }
+
+  document.getElementById('confirm-rows').innerHTML=`
     <div class="sum-row"><span class="sum-key">👤 Nama</span><span class="sum-val">${nama}</span></div>
     <div class="sum-row"><span class="sum-key">📞 No. WA</span><span class="sum-val">${nohp}</span></div>
     <div class="sum-row"><span class="sum-key">🏷️ Layanan</span><span class="sum-val">${SVC_LABEL[selSvc]}</span></div>
+    ${selSvc==='makanan'&&foodLines?`<div class="sum-row"><span class="sum-key">🍱 Menu</span><span class="sum-val" style="font-size:12px;font-weight:600">${foodLines.replace(/  • /g,'').replace(/\n/g,'<br>')}</span></div>`:''}
     <div class="sum-row"><span class="sum-key">📍 Lokasi Beli</span><span class="sum-val">${addrP}</span></div>
     <div class="sum-row"><span class="sum-key">🏠 Lokasi Tujuan</span><span class="sum-val">${addrD}</span></div>
-    <div class="sum-row"><span class="sum-key">📝 Keterangan</span><span class="sum-val">${ket || '–'}</span></div>
+    <div class="sum-row"><span class="sum-key">📝 Keterangan</span><span class="sum-val">${ket||'–'}</span></div>
     <div class="sum-row"><span class="sum-key">📏 Jarak</span><span class="sum-val">${totalKm.toFixed(2)} km</span></div>
     <div class="sum-row"><span class="sum-key">💳 Pembayaran</span><span class="sum-val">${selPay}</span></div>
     <div class="sum-row"><span class="sum-key">💰 Total Ongkos</span><span class="sum-val hi">Rp ${totalPrice.toLocaleString('id-ID')}</span></div>
   `;
 
-  const msg =
+  const msg=
 `🛵 *PESANAN KJGO – Everyday Ride*
 
 👤 *Nama:* ${nama}
 📞 *No. WA:* ${nohp}
-🏷️ *Layanan:* ${SVC_LABEL[selSvc]}
-📝 *Keterangan:* ${ket || '–'}
+🏷️ *Layanan:* ${SVC_LABEL[selSvc]}${foodMsg}
+📝 *Keterangan:* ${ket||'–'}
 
 📍 *Lokasi Beli/Jemput:*
 ${addrP}
@@ -766,20 +967,23 @@ https://maps.google.com/?q=${dropLL.lat},${dropLL.lng}
 
 _Dipesan via KJGO Everyday Ride_ 🙏`;
 
-  document.getElementById('wa-link').href = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(msg)}`;
+  document.getElementById('wa-link').href=`https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(msg)}`;
 }
 
 /* ══════════ TOAST ══════════ */
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
 }
 
-/* init */
+/* ══════════ INIT ══════════ */
 activateMode('pickup');
+// Auto-request GPS on load after short delay
+setTimeout(()=>{
+  if(navigator.geolocation) document.getElementById('gps-modal').classList.remove('hidden');
+}, 600);
 </script>
 </body>
 </html>
